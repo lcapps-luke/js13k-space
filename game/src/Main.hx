@@ -16,6 +16,8 @@ class Main {
 		Browser.window.document.body.onresize = onResize;
 		onResize();
 
+		Ctrl.init(Browser.window);
+
 		Game.init(canvas.getContext2d());
 		Game.restart();
 
