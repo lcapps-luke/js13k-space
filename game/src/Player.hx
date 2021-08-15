@@ -40,7 +40,7 @@ class Player {
 		y += ys * s;
 
 		if(p != null){
-			var dir = Math.atan2(y - p.y, x - p.x);
+			var dir = LcMath.dir(p.x, p.y, x, y);
 			x = p.x + Math.cos(dir) * p.r;
 			y = p.y + Math.sin(dir) * p.r;
 			xs = 0;
