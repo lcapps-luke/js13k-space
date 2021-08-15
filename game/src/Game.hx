@@ -7,6 +7,7 @@ import js.html.CanvasRenderingContext2D;
 
 class Game {
 	private static inline var VIEW_MARGIN:Float = 200;
+	private static inline var ZOOM_SPEED:Float = 0.5;
 
 	public static inline var GRAVITY:Float = 1000;
 	public static var c(default, null):CanvasRenderingContext2D;
@@ -15,6 +16,7 @@ class Game {
 
 	public static var v:AABB;
 	public static var zoom:Float = 2;
+	public static var zoomTarget:Float = zoom;
 
 	public static function init(c:CanvasRenderingContext2D) {
 		Game.c = c;
@@ -49,6 +51,15 @@ class Game {
 			var md = vpd - ms;
 			v.x += Math.cos(vpa) * md;
 			v.y += Math.sin(vpa) * md;
+		}
+
+		if(zoom != zoomTarget){
+			var za = ZOOM_SPEED * s;
+			if(Math.abs(zoom - zoomTarget) < za){
+				zoom = zoomTarget;
+			}else{
+				zoom += zoom > zoomTarget ? -za : za;
+			}
 		}
 
 		c.save();

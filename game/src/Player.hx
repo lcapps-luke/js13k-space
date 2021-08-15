@@ -58,6 +58,7 @@ class Player {
 		var ay = 0.0;
 
 		var touchPlanet:Planet = null;
+		var zoom:Float = 1;
 
 		for(p in Game.planets){
 			var dx = p.x - x;
@@ -73,10 +74,16 @@ class Player {
 			if(dis <= p.r){
 				touchPlanet = p;
 			}
+
+			if(dis - p.r < 100){
+				zoom = 1.5;
+			}
 		}
 
 		xs += ax * s;
 		ys += ay * s;
+
+		Game.zoomTarget = zoom;
 
 		return touchPlanet;
 	}
