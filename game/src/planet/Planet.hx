@@ -16,7 +16,7 @@ class Planet{
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
-		c.fillStyle = "#0F0";
+		c.fillStyle = "#888";
 		c.beginPath();
 		c.arc(x, y, r, 0, Math.PI * 2);
 		c.fill();
