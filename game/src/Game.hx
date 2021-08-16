@@ -6,10 +6,11 @@ import planet.Planet;
 import js.html.CanvasRenderingContext2D;
 
 class Game {
+	public static inline var GRAVITY:Float = 1000;
+
 	private static inline var VIEW_MARGIN:Float = 200;
 	private static inline var ZOOM_SPEED:Float = 0.5;
 
-	public static inline var GRAVITY:Float = 1000;
 	public static var c(default, null):CanvasRenderingContext2D;
 	public static var p:Player;
 	public static var planets:Array<Planet>;
@@ -27,6 +28,8 @@ class Game {
 		planets = new Array<Planet>();
 		planets.push(new Planet(c.canvas.width / 2, c.canvas.height / 2, 200, 10000));
 		planets.push(new Planet(c.canvas.width * 0.75, c.canvas.height * 0.25, 50, 1000));
+
+		planets[1].orbit(planets[0], 3.14 / 30);
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
 	}
