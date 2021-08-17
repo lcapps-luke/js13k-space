@@ -9,7 +9,7 @@ class Game {
 	public static inline var GRAVITY:Float = 1000;
 
 	private static inline var VIEW_MARGIN:Float = 200;
-	private static inline var ZOOM_SPEED:Float = 0.5;
+	private static inline var ZOOM_SPEED:Float = 0.25;
 
 	public static var c(default, null):CanvasRenderingContext2D;
 	public static var p:Player;
@@ -25,11 +25,37 @@ class Game {
 
 	public static function restart(){
 		p = new Player();
+		p.x = 1500;
+		p.y = -1500 - 300;
+		
 		planets = new Array<Planet>();
-		planets.push(new Planet(c.canvas.width / 2, c.canvas.height / 2, 200, 10000));
-		planets.push(new Planet(c.canvas.width * 0.75, c.canvas.height * 0.25, 50, 1000));
+		
+		var sun = new Planet(0, 0, 1000, 100000, "#FEE");
+		planets.push(sun);
 
-		planets[1].orbit(planets[0], 3.14 / 30);
+		var g = new Planet(1500, -1500, 300, 5000, "#888");
+		g.orbit(sun, 3.14 / 300);
+		planets.push(g);
+
+		var gr = new Planet(3000, 3000, 600, 20000, "#0F8");
+		gr.orbit(sun, -3.14 / 600);
+		planets.push(gr);
+
+		var r = new Planet(-4500, 4500, 900, 30000, "#F88");
+		r.orbit(sun, 3.14 / 1000);
+		planets.push(r);
+
+		var o = new Planet(-4500, -4500, 500, 30000, "#FF8");
+		o.orbit(sun, 3.14 / 1000);
+		planets.push(o);
+
+		var b = new Planet(7000, -7000, 900, 30000, "#08F");
+		b.orbit(sun, 3.14 / 3600);
+		planets.push(b);
+
+		var s = new Planet(6000, -6000, 200, 1000, "#808");
+		s.orbit(b, 3.14 / 180);
+		planets.push(s);
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
 	}

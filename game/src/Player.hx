@@ -5,8 +5,8 @@ import planet.Planet;
 import js.html.CanvasRenderingContext2D;
 
 class Player {
-	private static inline var MAX_SPEED:Float = 200;
-	private static inline var THRUST:Float = 300;
+	private static inline var MAX_SPEED:Float = 600;
+	private static inline var THRUST:Float = 400;
 
 	public var x:Float;
 	public var y:Float;
@@ -58,7 +58,7 @@ class Player {
 		var ay = 0.0;
 
 		var touchPlanet:Planet = null;
-		var zoom:Float = 1;
+		var zoom:Float = 0.1;//0.25;
 
 		for(p in Game.planets){
 			var dx = p.x - x;
@@ -75,8 +75,8 @@ class Player {
 				touchPlanet = p;
 			}
 
-			if(dis - p.r < 100){
-				zoom = 1.5;
+			if(dis - p.r < 700){
+				zoom = 1;
 			}
 		}
 
