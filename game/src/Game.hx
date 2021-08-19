@@ -14,6 +14,7 @@ class Game {
 	public static var c(default, null):CanvasRenderingContext2D;
 	public static var p:Player;
 	public static var planets:Array<Planet>;
+	public static var pBlt:Array<Bullet>;
 
 	public static var v:AABB;
 	public static var zoom:Float = 2;
@@ -27,6 +28,8 @@ class Game {
 		p = new Player();
 		p.x = 1500;
 		p.y = -1500 - 300;
+
+		pBlt = new Array<Bullet>();
 		
 		planets = new Array<Planet>();
 		
@@ -71,8 +74,10 @@ class Game {
 		/**
 		 * View
 		 */
-		var vcx = v.x + (v.w / zoom) / 2;
-		var vcy = v.y + (v.h / zoom) / 2;
+		v.w = c.canvas.width / zoom;
+		v.h = c.canvas.height / zoom;
+		var vcx = v.x + v.w / 2;
+		var vcy = v.y + v.h / 2;
 		var vpd = LcMath.distP(vcx, vcy, p.x, p.y);
 		var ms = VIEW_MARGIN / zoom;
 		if(vpd > ms){
@@ -95,7 +100,6 @@ class Game {
 		c.scale(zoom, zoom);
 		c.translate(-v.x, -v.y);
 
-
 		/**
 		 * Entities
 		 */
@@ -104,13 +108,40 @@ class Game {
 			p.update(s, c);
 		}
 
+		var ded = [];
+		for(p in pBlt){
+			var alv = p.update(c, s);
+			if(!alv){
+				ded.push(p);
+			}
+		}
+		for(p in ded){
+			pBlt.remove(p);
+		}
+
 		p.update(s, c);
 
 		//View debug
 		//c.strokeStyle = "#F00";
-		//c.strokeRect(v.x, v.y, v.w / zoom, v.h / zoom);
+		//c.strokeRect(v.x, v.y, v.w, v.h);
 
 		c.restore();
 		//TODO HUD / on-screen controls
+	}
+
+	public static inline function inView(o:AABB):Bool{
+		return v.check(o);
+	}
+
+	public static inline function screenX(x:Float):Float{
+		return (x - v.x) * zoom ;
+	}
+
+	public static inline function screenY(y:Float):Float{
+		return (y - v.y) * zoom  ;
+	}
+
+	public static inline function addPlayerBullet(b:Bullet) {
+		pBlt.push(b);
 	}
 }

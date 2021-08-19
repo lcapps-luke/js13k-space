@@ -7,17 +7,19 @@ import js.html.CanvasRenderingContext2D;
 class Player {
 	private static inline var MAX_SPEED:Float = 600;
 	private static inline var THRUST:Float = 400;
+	private static inline var SHOT_COOL_DOWN:Float = 0.33;
+	private static inline var SHOT_SPEED:Float = 600;
 
 	public var x:Float;
 	public var y:Float;
-	public var xs:Float;
-	public var ys:Float;
+	public var xs:Float = 0;
+	public var ys:Float = 0;
+
+	public var scd:Float = 0; // shot cool down
 
 	public function new() {
 		x = 100;
 		y = 200;
-		xs = 0;
-		ys = 0;
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
@@ -47,6 +49,13 @@ class Player {
 			ys = 0;
 		}
 
+		scd = scd > 0 ? scd - s : 0;
+		if(Ctrl.trg && scd <= 0){
+			scd = SHOT_COOL_DOWN;
+			shoot();
+		}
+
+
 		c.fillStyle = "#00F";
 		c.beginPath();
 		c.arc(x, y, 10, 0, Math.PI * 2);
@@ -58,7 +67,7 @@ class Player {
 		var ay = 0.0;
 
 		var touchPlanet:Planet = null;
-		var zoom:Float = 0.1;//0.25;
+		var zoom:Float = 0.4;//0.25;
 
 		for(p in Game.planets){
 			var dx = p.x - x;
@@ -86,5 +95,9 @@ class Player {
 		Game.zoomTarget = zoom;
 
 		return touchPlanet;
+	}
+
+	private inline function shoot(){
+		Game.addPlayerBullet(new Bullet(x, y, Math.cos(Ctrl.aim) * SHOT_SPEED, Math.sin(Ctrl.aim) * SHOT_SPEED));
 	}
 }

@@ -16,7 +16,7 @@ class Main {
 		Browser.window.document.body.onresize = onResize;
 		onResize();
 
-		Ctrl.init(Browser.window);
+		Ctrl.init(Browser.window, canvas);
 
 		Game.init(canvas.getContext2d());
 		Game.restart();
@@ -32,6 +32,7 @@ class Main {
 	}
 
 	public static function update(s:Float) {
+		Ctrl.update();
 		Game.update((s - lastFrame) / 1000);
 		lastFrame = s;
 		Browser.window.requestAnimationFrame(update);

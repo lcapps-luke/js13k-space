@@ -1,5 +1,6 @@
 package planet;
 
+import math.AABB;
 import math.LcMath;
 import js.html.CanvasRenderingContext2D;
 
@@ -9,6 +10,7 @@ class Planet{
 	public var r:Float;
 	public var m:Float;
 	private var c:String;
+	private var aabb:AABB;
 
 	private var ot:Planet;
 	private var ov:Float;
@@ -21,6 +23,7 @@ class Planet{
 		this.r = r;
 		this.m = m;
 		this.c = c;
+		aabb = new AABB(x - r, y - r, r * 2, r * 2);
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
@@ -28,12 +31,17 @@ class Planet{
 			oa += ov * s;
 			x = ot.x + Math.cos(oa) * od;
 			y = ot.y + Math.sin(oa) * od;
+
+			aabb.x = x - r;
+			aabb.y = y - r;
 		}
 
-		c.fillStyle = this.c;
-		c.beginPath();
-		c.arc(x, y, r, 0, Math.PI * 2);
-		c.fill();
+		if(Game.inView(aabb)){
+			c.fillStyle = this.c;
+			c.beginPath();
+			c.arc(x, y, r, 0, Math.PI * 2);
+			c.fill();
+		}
 	}
 
 	public function orbit(ot:Planet, ov:Float){
