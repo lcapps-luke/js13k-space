@@ -25,6 +25,20 @@ class Player {
 	public function update(s:Float, c:CanvasRenderingContext2D) {
 		var p = calculatePlanetAttraction(s);
 
+		var dir = Math.atan2(ys, xs);
+		var spd = LcMath.distD(xs, ys);
+		spd = Math.min(spd, MAX_SPEED);
+		xs = Math.cos(dir) * spd;
+		ys = Math.sin(dir) * spd;
+
+		if(p != null){
+			var dir = LcMath.dir(p.x, p.y, x, y);
+			x = p.x + Math.cos(dir) * p.r;
+			y = p.y + Math.sin(dir) * p.r;
+			xs = p.xs;
+			ys = p.ys;
+		}
+
 		if(Ctrl.acc > 0){
 			var ax = Math.cos(Ctrl.dir) * Ctrl.acc * THRUST;
 			var ay = Math.sin(Ctrl.dir) * Ctrl.acc * THRUST;
@@ -32,22 +46,8 @@ class Player {
 			ys += ay * s;
 		}
 
-		var dir = Math.atan2(ys, xs);
-		var spd = LcMath.distD(xs, ys);
-		spd = Math.min(spd, MAX_SPEED);
-		xs = Math.cos(dir) * spd;
-		ys = Math.sin(dir) * spd;
-
 		x += xs * s;
 		y += ys * s;
-
-		if(p != null){
-			var dir = LcMath.dir(p.x, p.y, x, y);
-			x = p.x + Math.cos(dir) * p.r;
-			y = p.y + Math.sin(dir) * p.r;
-			xs = 0;
-			ys = 0;
-		}
 
 		scd = scd > 0 ? scd - s : 0;
 		if(Ctrl.trg && scd <= 0){

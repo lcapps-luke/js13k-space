@@ -16,6 +16,8 @@ class Planet{
 	private var ov:Float;
 	private var od:Float;
 	private var oa:Float;
+	public var xs(default, null):Float;
+	public var ys(default, null):Float;
 
 	public function new(x:Float, y:Float, r:Float, m:Float, c:String){
 		this.x = x;
@@ -24,13 +26,19 @@ class Planet{
 		this.m = m;
 		this.c = c;
 		aabb = new AABB(x - r, y - r, r * 2, r * 2);
+		xs = 0;
+		ys = 0;
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
 		if(ot != null){
 			oa += ov * s;
+			xs = x;
+			ys = y;
 			x = ot.x + Math.cos(oa) * od;
 			y = ot.y + Math.sin(oa) * od;
+			xs = (x - xs) / s;
+			ys = (y - ys) / s;
 
 			aabb.x = x - r;
 			aabb.y = y - r;
