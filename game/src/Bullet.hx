@@ -1,5 +1,6 @@
 package;
 
+import math.LcMath;
 import math.AABB;
 import js.html.CanvasRenderingContext2D;
 
@@ -20,6 +21,8 @@ class Bullet{
 		this.xs = xSpeed;
 		this.ys = ySpeed;
 		ttl = TIME_TO_LIVE;
+
+		aabb = new AABB(x, y, RADIUS * 2, RADIUS * 2);
 	}
 
 	public function update(c:CanvasRenderingContext2D, s:Float):Bool{
@@ -30,6 +33,10 @@ class Bullet{
 
 		x += xs * s;
 		y += ys * s;
+		aabb.x = x - RADIUS;
+		aabb.y = y - RADIUS;
+
+		checkCollisions();
 
 		c.fillStyle = "#F00";
 		c.beginPath();
@@ -37,5 +44,13 @@ class Bullet{
 		c.fill();
 
 		return true;
+	}
+
+	private inline function checkCollisions(){
+		for(p in Game.planets){
+			if(p.aabb.check(aabb) && LcMath.distP(x, y, p.x, p.y) < p.r + RADIUS){
+				ttl = 0;
+			}
+		}
 	}
 }

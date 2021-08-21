@@ -10,7 +10,7 @@ class Planet{
 	public var r:Float;
 	public var m:Float;
 	private var c:String;
-	private var aabb:AABB;
+	public var aabb(default, null):AABB;
 
 	private var ot:Planet;
 	private var ov:Float;
