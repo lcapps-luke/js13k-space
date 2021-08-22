@@ -5,12 +5,12 @@ import math.AABB;
 import js.html.CanvasRenderingContext2D;
 
 class Bullet{
-	private static inline var RADIUS:Float = 5;
+	public static inline var RADIUS:Float = 5;
 	private static inline var TIME_TO_LIVE = 5;
 
-	private var aabb:AABB;
-	private var x:Float;
-	private var y:Float;
+	public var aabb(default,null):AABB;
+	public var x(default, null):Float;
+	public var y(default, null):Float;
 	private var xs:Float;
 	private var ys:Float;
 	private var ttl:Float;
@@ -50,6 +50,13 @@ class Bullet{
 		for(p in Game.planets){
 			if(p.aabb.check(aabb) && LcMath.distP(x, y, p.x, p.y) < p.r + RADIUS){
 				ttl = 0;
+				break;
+			}
+		}
+		for(e in Game.eSwm){
+			if(e.checkHit(this)){
+				ttl = 0;
+				break;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package;
 
+import enemy.Swarm;
 import math.LcMath;
 import math.AABB;
 import planet.Planet;
@@ -15,6 +16,7 @@ class Game {
 	public static var p:Player;
 	public static var planets:Array<Planet>;
 	public static var pBlt:Array<Bullet>;
+	public static var eSwm:Array<Swarm>;
 
 	public static var v:AABB;
 	public static var zoom:Float = 2;
@@ -30,6 +32,7 @@ class Game {
 		p.y = -1500 - 300;
 
 		pBlt = new Array<Bullet>();
+		eSwm = new Array<Swarm>();
 		
 		planets = new Array<Planet>();
 		
@@ -61,6 +64,10 @@ class Game {
 		planets.push(s);
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
+
+		var s = new Swarm(5, gr.x - gr.r, gr.y - gr.r, gr.r * 2, gr.r * 2);
+		s.bind(gr);
+		eSwm.push(s);
 	}
 
 	public static function update(s:Float) {
@@ -108,18 +115,26 @@ class Game {
 			p.update(s, c);
 		}
 
-		var ded = [];
+		var lastDead = null;
 		for(p in pBlt){
 			var alv = p.update(c, s);
 			if(!alv){
-				ded.push(p);
+				lastDead = p;
 			}
 		}
-		for(p in ded){
-			pBlt.remove(p);
-		}
+		pBlt.remove(lastDead);
 
 		p.update(s, c);
+
+		var lastDead = null;
+		for(sw in eSwm){
+			if(!sw.update(s, c)){
+				lastDead = sw;
+			}
+		}
+		if(lastDead != null){
+			eSwm.remove(lastDead);
+		}
 
 		//View debug
 		//c.strokeStyle = "#F00";
