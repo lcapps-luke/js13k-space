@@ -8,7 +8,7 @@ class Swarm{
 	private static inline var INITIAL_SIZE:Float = 100;
 	private static inline var OUT_OF_VIEW_TIME:Float = 5;
 	private var aabb:AABB;
-	private var member:Array<Enemy>;
+	public var member(default, null):Array<Enemy>;
 	public var inf(default, null):Planet = null;
 
 	private var alive = 0;
@@ -102,8 +102,13 @@ class Swarm{
 		return false;
 	}
 
-	public function bind(p:Planet){
+	public inline function bind(p:Planet){
 		inf = p;
-		
+	}
+
+	public function engage(){
+		for(m in member){
+			m.engaged = true;
+		}
 	}
 }

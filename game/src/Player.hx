@@ -1,5 +1,7 @@
 package;
 
+import math.Line;
+import math.CircleLineIntersect;
 import math.LcMath;
 import planet.Planet;
 import js.html.CanvasRenderingContext2D;
@@ -9,20 +11,27 @@ class Player {
 	private static inline var THRUST:Float = 400;
 	private static inline var SHOT_COOL_DOWN:Float = 0.33;
 	private static inline var SHOT_SPEED:Float = 600;
+	private static inline var RADIUS:Float = 10;
 
-	public var x:Float;
-	public var y:Float;
+	public var x:Float = 0;
+	public var y:Float = 0;
 	public var xs:Float = 0;
 	public var ys:Float = 0;
 
 	public var scd:Float = 0; // shot cool down
+	public var alive:Bool = true;
+
+	private var hitCli:CircleLineIntersect = new CircleLineIntersect();
 
 	public function new() {
-		x = 100;
-		y = 200;
+		
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
+		if(!alive){
+			return;
+		}
+
 		var p = calculatePlanetAttraction(s);
 
 		var dir = Math.atan2(ys, xs);
@@ -48,6 +57,7 @@ class Player {
 
 		x += xs * s;
 		y += ys * s;
+		hitCli.circle.set(x, y, RADIUS);
 
 		scd = scd > 0 ? scd - s : 0;
 		if(Ctrl.trg && scd <= 0){
@@ -55,10 +65,9 @@ class Player {
 			shoot();
 		}
 
-
 		c.fillStyle = "#00F";
 		c.beginPath();
-		c.arc(x, y, 10, 0, Math.PI * 2);
+		c.arc(x, y, RADIUS, 0, Math.PI * 2);
 		c.fill();
 	}
 
@@ -99,5 +108,12 @@ class Player {
 
 	private inline function shoot(){
 		Game.addPlayerBullet(new Bullet(x, y, Math.cos(Ctrl.aim) * SHOT_SPEED, Math.sin(Ctrl.aim) * SHOT_SPEED));
+	}
+
+	public function checkHit(laserLine:Line) {
+		hitCli.line.copy(laserLine);
+		if(hitCli.update()){
+			alive = false;
+		}
 	}
 }
