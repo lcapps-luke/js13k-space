@@ -38,4 +38,12 @@ class AABB{
 		x = nx;
 		y = ny;
 	}
+
+	public function cX():Float{
+		return x + w / 2;
+	}
+
+	public function cY():Float{
+		return y + h / 2;
+	}
 }

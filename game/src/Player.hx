@@ -12,6 +12,7 @@ class Player {
 	private static inline var SHOT_COOL_DOWN:Float = 0.33;
 	private static inline var SHOT_SPEED:Float = 600;
 	private static inline var RADIUS:Float = 10;
+	private static inline var ZOOM_DIST:Float = 900;
 
 	public var x:Float = 0;
 	public var y:Float = 0;
@@ -93,7 +94,7 @@ class Player {
 				touchPlanet = p;
 			}
 
-			if(dis - p.r < 700){
+			if(dis - p.r < ZOOM_DIST){
 				zoom = 1;
 			}
 		}

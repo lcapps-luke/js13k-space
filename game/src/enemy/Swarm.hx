@@ -7,7 +7,7 @@ import math.AABB;
 class Swarm{
 	private static inline var INITIAL_SIZE:Float = 100;
 	private static inline var OUT_OF_VIEW_TIME:Float = 5;
-	private var aabb:AABB;
+	public var aabb(default, null):AABB;
 	public var member(default, null):Array<Enemy>;
 	public var inf(default, null):Planet = null;
 

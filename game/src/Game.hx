@@ -22,6 +22,8 @@ class Game {
 	public static var zoom:Float = 2;
 	public static var zoomTarget:Float = zoom;
 
+	public static var minimap:Minimap;
+
 	public static function init(c:CanvasRenderingContext2D) {
 		Game.c = c;
 	}
@@ -68,6 +70,9 @@ class Game {
 		var s = new Swarm(5, gr.x - gr.r, gr.y - gr.r, gr.r * 2, gr.r * 2);
 		s.bind(gr);
 		eSwm.push(s);
+
+		var mmr = c.canvas.height / 8;
+		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, 13000);
 	}
 
 	public static function update(s:Float) {
@@ -142,6 +147,7 @@ class Game {
 
 		c.restore();
 		//TODO HUD / on-screen controls
+		minimap.update(c);
 	}
 
 	public static inline function inView(o:AABB):Bool{
