@@ -1,5 +1,6 @@
 package;
 
+import js.html.FocusEvent;
 import js.Browser;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasElement;
@@ -9,6 +10,7 @@ class Main {
 	public static var c:CanvasRenderingContext2D;
 
 	public static var lastFrame:Float = 0;
+	public static var focusReset:Bool = false;
 
 	public static function main() {
 		canvas = cast Browser.window.document.getElementById("c");
@@ -22,6 +24,10 @@ class Main {
 		Game.restart();
 
 		Browser.window.requestAnimationFrame(update);
+
+		Browser.window.onfocus = function(e:FocusEvent){
+			focusReset = true;
+		};
 	}
 
 	public static function onResize() {
@@ -32,6 +38,11 @@ class Main {
 	}
 
 	public static function update(s:Float) {
+		if(focusReset){
+			lastFrame = s - 1;
+			focusReset = false;
+		}
+
 		Ctrl.update();
 		Game.update((s - lastFrame) / 1000);
 		lastFrame = s;

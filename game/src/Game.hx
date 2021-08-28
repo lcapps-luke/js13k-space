@@ -38,30 +38,30 @@ class Game {
 		
 		planets = new Array<Planet>();
 		
-		var sun = new Planet(0, 0, 1000, 100000, "#FEE");
+		var sun = new Planet(0, 0, 1000, 100000, "#FEE", 0);
 		planets.push(sun);
 
-		var g = new Planet(1500, -1500, 300, 5000, "#888");
+		var g = new Planet(1500, -1500, 300, 5000, "#888", 3);
 		g.orbit(sun, 3.14 / 300);
 		planets.push(g);
 
-		var gr = new Planet(3000, 3000, 600, 20000, "#0F8");
+		var gr = new Planet(3000, 3000, 600, 20000, "#0F8", 5);
 		gr.orbit(sun, -3.14 / 600);
 		planets.push(gr);
 
-		var r = new Planet(-4500, 4500, 900, 30000, "#F88");
+		var r = new Planet(-4500, 4500, 900, 30000, "#F88", 8);
 		r.orbit(sun, 3.14 / 1000);
 		planets.push(r);
 
-		var o = new Planet(-4500, -4500, 500, 30000, "#FF8");
+		var o = new Planet(-4500, -4500, 500, 30000, "#FF8", 4);
 		o.orbit(sun, 3.14 / 1000);
 		planets.push(o);
 
-		var b = new Planet(7000, -7000, 900, 30000, "#08F");
+		var b = new Planet(7000, -7000, 900, 30000, "#08F", 10);
 		b.orbit(sun, 3.14 / 3600);
 		planets.push(b);
 
-		var s = new Planet(6000, -6000, 200, 1000, "#808");
+		var s = new Planet(6000, -6000, 200, 1000, "#808", 2);
 		s.orbit(b, 3.14 / 180);
 		planets.push(s);
 
@@ -73,6 +73,7 @@ class Game {
 
 		var mmr = c.canvas.height / 8;
 		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, 13000);
+		//new Minimap(c.canvas.width / 2, c.canvas.height - c.canvas.height / 8, c.canvas.height / 8, 8000);
 	}
 
 	public static function update(s:Float) {

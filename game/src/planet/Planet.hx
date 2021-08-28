@@ -19,15 +19,24 @@ class Planet{
 	public var xs(default, null):Float;
 	public var ys(default, null):Float;
 
-	public function new(x:Float, y:Float, r:Float, m:Float, c:String){
+	private var domes = new Array<Dome>();
+
+	public function new(x:Float, y:Float, r:Float, m:Float, c:String, domeQty:Int = 3){
 		this.x = x;
 		this.y = y;
 		this.r = r;
 		this.m = m;
 		this.c = c;
-		aabb = new AABB(x - r, y - r, r * 2, r * 2);
+		aabb = new AABB(x - r - Dome.RADIUS, y - r - Dome.RADIUS, r * 2 + Dome.RADIUS * 2, r * 2 + Dome.RADIUS * 2);
 		xs = 0;
 		ys = 0;
+
+		var dd = (Math.PI * 2) / domeQty;
+		var dr = dd * 0.5;
+		for(i in 0...domeQty){
+			var dp = dd * i + Math.random() * dr;
+			domes.push(new Dome(this, dp));
+		}
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
@@ -40,11 +49,15 @@ class Planet{
 			xs = (x - xs) / s;
 			ys = (y - ys) / s;
 
-			aabb.x = x - r;
-			aabb.y = y - r;
+			aabb.x = x - r - Dome.RADIUS;
+			aabb.y = y - r - Dome.RADIUS;
 		}
 
 		if(Game.inView(aabb)){
+			for(d in domes){
+				d.update(s, c);
+			}
+
 			c.fillStyle = this.c;
 			c.beginPath();
 			c.arc(x, y, r, 0, Math.PI * 2);

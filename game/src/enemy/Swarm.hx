@@ -57,6 +57,7 @@ class Swarm{
 					sectAcc += sect;
 				}
 			}
+			inView = true;
 		}
 
 		alive = 0;
@@ -71,8 +72,6 @@ class Swarm{
 				}
 			}
 		}
-
-		inView = true;
 	}
 
 	private inline function updateOutOfView(s:Float, c:CanvasRenderingContext2D){
