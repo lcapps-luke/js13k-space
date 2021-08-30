@@ -20,6 +20,7 @@ class Planet{
 	public var ys(default, null):Float;
 
 	private var domes = new Array<Dome>();
+	private var alive:Int = 0;
 
 	public function new(x:Float, y:Float, r:Float, m:Float, c:String, domeQty:Int = 3){
 		this.x = x;
@@ -37,6 +38,7 @@ class Planet{
 			var dp = dd * i + Math.random() * dr;
 			domes.push(new Dome(this, dp));
 		}
+		alive = domeQty;
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
@@ -53,8 +55,12 @@ class Planet{
 			aabb.y = y - r - Dome.RADIUS;
 		}
 
+		alive = 0;
 		for(d in domes){
 			d.update(s, c);
+			if(d.isAlive()){
+				alive++;
+			}
 		}
 
 		if(Game.inView(aabb)){
@@ -72,10 +78,13 @@ class Planet{
 		od = LcMath.distP(ot.x, ot.y, x, y);
 	}
 
-	public function getClosestDome(x:Float, y:Float) {
+	public function getClosestDome(x:Float, y:Float):Dome {
 		var nd:Float = -1;
 		var n:Dome = null;
 		for(d in domes){
+			if(!d.isAlive()){
+				continue;
+			}
 			var di = LcMath.distP(x, y, d.aabb.cX(), d.aabb.cY());
 			if(di < nd || nd < 0){
 				nd = di;
@@ -83,5 +92,9 @@ class Planet{
 			}
 		}
 		return n;
+	}
+
+	public inline function hasAlive():Bool{
+		return alive > 0;
 	}
 }

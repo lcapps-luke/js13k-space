@@ -6,11 +6,11 @@ import math.AABB;
 import js.html.CanvasRenderingContext2D;
 
 class Enemy{
-	private static inline var RADIUS:Float = 15;
-	private static inline var AVOID_RADIUS:Float = RADIUS * 3;
+	public static inline var RADIUS:Float = 15;
+	public static inline var AVOID_RADIUS:Float = RADIUS * 3;
 	public static inline var INFECT_DISTANCE:Float = 200;
 	private static inline var AVOID_DISTANCE:Float = INFECT_DISTANCE / 2;
-	private static inline var MAX_SPEED:Float = 400;
+	public static inline var MAX_SPEED:Float = 400;
 	private static inline var ACC:Float = 2000;
 	private static inline var ENGAGE_DISTANCE:Float = 400;
 	private static inline var FIRE_DISTANCE:Float = 600;
@@ -165,15 +165,14 @@ class Enemy{
 			var dist = LcMath.distP(x, y, swrm.inf.x, swrm.inf.y) - swrm.inf.r;
 			var infDist = dist - (INFECT_DISTANCE + swrm.inf.r);
 
-			if(infDist > MAX_SPEED){
+			var tgt = swrm.inf.getClosestDome(this.x, this.y);
+
+			if(infDist > MAX_SPEED || tgt == null){
 				// move to surface
 				var infDir = LcMath.dir(x, y, swrm.inf.x, swrm.inf.y);
 				xa = Math.cos(infDir) * ACC;
 				ya = Math.sin(infDir) * ACC;
 			}else{
-				// move to next target (or stay)
-				var tgt = swrm.inf.getClosestDome(this.x, this.y);
-				
 				var dist = LcMath.distP(x, y, tgt.ex, tgt.ey);
 				var dir = LcMath.dir(x, y, tgt.ex, tgt.ey);
 
@@ -192,10 +191,10 @@ class Enemy{
 					}
 				}
 			}
-			
-			// avoid swarm members (raise or lower - give way to counter clockwise) 
 		}else{
 			// return to swarm
+			xa = 0;
+			ya = 0;
 		}
 	}
 

@@ -12,4 +12,19 @@ class LcMath{
 	public static inline function dir(ax:Float, ay:Float, bx:Float, by:Float):Float{
 		return Math.atan2(by - ay, bx - ax);
 	}
+
+	public static function suffle(arr:Array<Dynamic>) {
+		var ci = arr.length;
+		var ri = 0;
+
+		while(ci != 0){
+			ri = Math.floor(Math.random() * ci);
+			ci--;
+
+			var ce = arr[ci];
+			var re = arr[ri];
+			arr[ci] = re;
+			arr[ri] = ce;
+		}
+	}
 }

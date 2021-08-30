@@ -1,5 +1,6 @@
 package enemy;
 
+import math.LcMath;
 import js.html.CanvasRenderingContext2D;
 import planet.Planet;
 import math.AABB;
@@ -10,14 +11,15 @@ class Swarm{
 	public var aabb(default, null):AABB;
 	public var member(default, null):Array<Enemy>;
 	public var inf(default, null):Planet = null;
+	public var infTarget:Planet = null;
 
 	private var alive = 0;
-	private var oov:Float = 0;
+	private var oov:Float = OUT_OF_VIEW_TIME + 1;
 	private var inView:Bool = false;
 
 	public function new(qty:Int, x:Float, y:Float, w:Float, h:Float){
 		member = new Array<Enemy>();
-		aabb = new AABB(0, 0, INITIAL_SIZE, INITIAL_SIZE);
+		aabb = new AABB(x, y, INITIAL_SIZE, INITIAL_SIZE);
 		for(i in 0...qty){
 			var m = new Enemy(x + Math.random() * w, y + Math.random() * h, 3, this);
 			member.push(m);
@@ -37,7 +39,7 @@ class Swarm{
 			updateInView(s, c);
 		}
 		
-		//oov = Game.inView(aabb) ? 0 : oov + s;
+		oov = Game.inView(aabb) ? 0 : oov + s;
 
 		return alive > 0;
 	}
@@ -46,7 +48,22 @@ class Swarm{
 		if(!inView){  // transition to in view
 			// relocate members
 			if(inf == null){
-				// uniform
+				// formation
+				var lineSize = Math.floor(Math.sqrt(member.length));
+				var xacc = 0;
+				var yacc = 0;
+				for(m in member){
+					m.x = aabb.x + Enemy.AVOID_RADIUS * xacc;
+					m.y = aabb.y + Enemy.AVOID_RADIUS * yacc;
+
+					xacc++;
+					if(xacc > lineSize){
+						yacc++;
+						xacc = 0;
+					}
+				}
+
+
 			}else{
 				// around planet
 				var sect:Float = (Math.PI * 2) / alive;
@@ -78,6 +95,8 @@ class Swarm{
 		//TODO swarm movement
 		if(inView && inf == null){ // transition to out-of-view
 			// shrink aabb
+			aabb.w = Math.sqrt(member.length) * Enemy.AVOID_RADIUS;
+			aabb.h = aabb.w;
 		}
 
 		if(inf != null){
@@ -85,6 +104,18 @@ class Swarm{
 			aabb.y = inf.y - (inf.r + Enemy.INFECT_DISTANCE);
 			aabb.w = inf.r * 2 + Enemy.INFECT_DISTANCE * 2;
 			aabb.h = aabb.w;
+		}
+
+		if(infTarget != null){
+			var dir = LcMath.dir(aabb.cX(), aabb.cY(), infTarget.x, infTarget.y);
+			aabb.x += Math.cos(dir) * Enemy.MAX_SPEED * s;
+			aabb.y += Math.sin(dir) * Enemy.MAX_SPEED * s;
+			//TODO avoid other planets / swarms
+
+			if(aabb.check(infTarget.aabb)){
+				bind(infTarget);
+				infTarget = null;
+			}
 		}
 
 		inView = false;
@@ -109,5 +140,9 @@ class Swarm{
 		for(m in member){
 			m.engaged = true;
 		}
+	}
+
+	public inline function target(p:Planet){
+		infTarget = p;
 	}
 }

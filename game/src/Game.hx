@@ -1,5 +1,6 @@
 package;
 
+import enemy.Enemy;
 import enemy.Swarm;
 import math.LcMath;
 import math.AABB;
@@ -8,21 +9,28 @@ import js.html.CanvasRenderingContext2D;
 
 class Game {
 	public static inline var GRAVITY:Float = 1000;
-
 	private static inline var VIEW_MARGIN:Float = 200;
 	private static inline var ZOOM_SPEED:Float = 0.25;
+	private static inline var SPAWN_SIZE_INCR:Float = 0.2;
+	private static inline var SPAWN_SIZE_CAP:Int = 10;
+	private static inline var SYSTEM_RADIUS:Float = 13000;
+	private static inline var SPAWN_TIME_MIN:Float = 30;
+	private static inline var SPAWN_TIME_VAR:Float = 30;
 
 	public static var c(default, null):CanvasRenderingContext2D;
-	public static var p:Player;
-	public static var planets:Array<Planet>;
-	public static var pBlt:Array<Bullet>;
-	public static var eSwm:Array<Swarm>;
+	public static var p(default, null):Player;
+	public static var planets(default, null):Array<Planet>;
+	public static var pBlt(default, null):Array<Bullet>;
+	public static var eSwm(default, null):Array<Swarm>;
 
-	public static var v:AABB;
-	public static var zoom:Float = 2;
+	public static var v(default, null):AABB;
+	public static var zoom(default, null):Float = 2;
 	public static var zoomTarget:Float = zoom;
 
-	public static var minimap:Minimap;
+	private static var minimap:Minimap;
+
+	private static var spawnTimer:Float = 5;
+	private static var spawnSize:Float = 3;
 
 	public static function init(c:CanvasRenderingContext2D) {
 		Game.c = c;
@@ -67,16 +75,18 @@ class Game {
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
 
-		var s = new Swarm(5, gr.x - gr.r, gr.y - gr.r, gr.r * 2, gr.r * 2);
+		var s = new Swarm(1, gr.x - gr.r, gr.y - gr.r, gr.r * 2, gr.r * 2);
 		s.bind(gr);
 		eSwm.push(s);
 
 		var mmr = c.canvas.height / 8;
-		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, 13000);
+		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, SYSTEM_RADIUS);
 		//new Minimap(c.canvas.width / 2, c.canvas.height - c.canvas.height / 8, c.canvas.height / 8, 8000);
 	}
 
 	public static function update(s:Float) {
+		updateSpawns(s);
+
 		/**
 		 *  background
 		 */
@@ -166,4 +176,57 @@ class Game {
 	public static inline function addPlayerBullet(b:Bullet) {
 		pBlt.push(b);
 	}
+
+	private static inline function updateSpawns(s:Float) {
+		spawnTimer -= s;
+		if(spawnTimer < 0){
+			spawnSwarm();
+			
+			spawnTimer = SPAWN_TIME_MIN + Math.random() * SPAWN_TIME_VAR;
+			spawnSize = Math.min(spawnSize + SPAWN_SIZE_INCR, SPAWN_SIZE_CAP);
+		}
+	}
+
+	private static inline function spawnSwarm() {
+		// find unengaged planet
+		var candidates = new Array<Planet>();
+		for(p in planets){
+			if(p.hasAlive() && !isTargeted(p)){
+				candidates.push(p);
+			}
+		}
+
+		LcMath.suffle(candidates);
+
+		for(c in candidates){
+			var s = spawnForCandidate(c);
+			if(s != null){
+				s.target(c);
+				eSwm.push(s);
+				break;
+			}
+		}
+	}
+
+	private static function isTargeted(p:Planet):Bool {
+		for(s in eSwm){
+			if(s.inf == p || s.infTarget == p){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static inline function spawnForCandidate(c:Planet):Swarm {
+		// calculate angle of attack
+		// create swarm
+
+		var initialAngle = LcMath.dir(0, 0, c.x, c.y);
+		var sx:Float = Math.cos(initialAngle) * SYSTEM_RADIUS;
+		var sy:Float = Math.sin(initialAngle) * SYSTEM_RADIUS;
+
+		var swarmDiameter = Math.sqrt(spawnSize) * Enemy.AVOID_RADIUS;
+		return new Swarm(Math.floor(spawnSize), sx, sy, swarmDiameter, swarmDiameter);
+	}
+
 }

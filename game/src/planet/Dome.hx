@@ -31,7 +31,7 @@ class Dome{
 		ex = p.x + Math.cos(d) * (p.r + Enemy.INFECT_DISTANCE);
 		ey = p.y + Math.sin(d) * (p.r + Enemy.INFECT_DISTANCE);
 
-		if(Game.inView(aabb)){
+		if(Game.inView(aabb) && isAlive()){
 			c.fillStyle = "#333";
 			c.beginPath();
 			c.arc(x, y, RADIUS, 0, Math.PI * 2);
