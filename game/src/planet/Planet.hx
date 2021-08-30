@@ -53,11 +53,11 @@ class Planet{
 			aabb.y = y - r - Dome.RADIUS;
 		}
 
-		if(Game.inView(aabb)){
-			for(d in domes){
-				d.update(s, c);
-			}
+		for(d in domes){
+			d.update(s, c);
+		}
 
+		if(Game.inView(aabb)){
 			c.fillStyle = this.c;
 			c.beginPath();
 			c.arc(x, y, r, 0, Math.PI * 2);
@@ -70,5 +70,18 @@ class Planet{
 		this.ov = ov;
 		oa = LcMath.dir(ot.x, ot.y, x, y);
 		od = LcMath.distP(ot.x, ot.y, x, y);
+	}
+
+	public function getClosestDome(x:Float, y:Float) {
+		var nd:Float = -1;
+		var n:Dome = null;
+		for(d in domes){
+			var di = LcMath.distP(x, y, d.aabb.cX(), d.aabb.cY());
+			if(di < nd || nd < 0){
+				nd = di;
+				n = d;
+			}
+		}
+		return n;
 	}
 }

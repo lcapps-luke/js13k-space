@@ -8,12 +8,14 @@ import js.html.CanvasRenderingContext2D;
 class Enemy{
 	private static inline var RADIUS:Float = 15;
 	private static inline var AVOID_RADIUS:Float = RADIUS * 3;
-	public static inline var INFECT_DISTANCE:Float = 100;
+	public static inline var INFECT_DISTANCE:Float = 200;
+	private static inline var AVOID_DISTANCE:Float = INFECT_DISTANCE / 2;
 	private static inline var MAX_SPEED:Float = 400;
 	private static inline var ACC:Float = 2000;
 	private static inline var ENGAGE_DISTANCE:Float = 400;
 	private static inline var FIRE_DISTANCE:Float = 600;
 	private static inline var LASER_DIST:Float = 1000;
+	private static inline var DPS:Float = 2;
 
 	public var x:Float;
 	public var y:Float;
@@ -26,7 +28,7 @@ class Enemy{
 	private var swrm:Swarm;
 	public var engaged:Bool = false;
 	
-	private var fcd:Float = 3;
+	private var fcd:Float = 2;
 	private var fire:Float = 0;
 	private var fireDir:Float = 0;
 	private var laserLine:Line = new Line();
@@ -50,10 +52,36 @@ class Enemy{
 		xs = xs * 0.9;
 		ys = ys * 0.9;
 
+		updateFiring(s, c);
+
 		if(engaged){
 			updateEngaged(s, c);
 		}else{
 			updateDisengaged(s, c);
+		}
+
+		// avoid planets
+		var pln = null;
+		for(p in Game.planets){
+			if(LcMath.distP(x, y, p.x, p.y) < AVOID_DISTANCE + p.r){
+				pln = p;
+			}
+		}
+		if(pln != null){
+			var dir = LcMath.dir(pln.x, pln.y, x, y);
+			xa = Math.cos(dir) * ACC;
+			ya = Math.sin(dir) * ACC;
+		}
+
+		// avoid members
+		var mi = swrm.member.indexOf(this) + 1;
+		for(i in mi...swrm.member.length){
+			var m = swrm.member[i];
+			if(LcMath.distP(m.x, m.y, x, y) < AVOID_RADIUS * 2){
+				var dir = LcMath.dir(m.x, m.y, x, y);
+				xa += Math.cos(dir) * ACC;
+				ya += Math.sin(dir) * ACC;
+			}
 		}
 
 
@@ -76,6 +104,38 @@ class Enemy{
 	}
 
 	public inline function updateEngaged(s:Float, c:CanvasRenderingContext2D){
+		// move toward player
+		var dist = LcMath.distP(x, y, Game.p.x, Game.p.y);
+		var dir = LcMath.dir(x, y, Game.p.x, Game.p.y);
+
+		if(dist > ENGAGE_DISTANCE){
+			xa = Math.cos(dir) * ACC;
+			ya = Math.sin(dir) * ACC;
+		}else{
+			xa = 0;
+			ya = 0;
+		}
+
+		if(dist < FIRE_DISTANCE){
+			shoot(Game.p.x + Game.p.xs * 0.75, Game.p.y + Game.p.ys * 0.75, s);
+		}
+
+		if(!Game.p.alive){
+			engaged = false;
+		}
+	}
+
+	private function shoot(tx:Float, ty:Float, s:Float){
+		fcd -= s;
+
+		if(fcd < 0){
+			fire = 1;
+			fireDir = LcMath.dir(x, y, tx, ty);
+			fcd = Math.random() * 2 + 2;
+		}
+	}
+
+	private inline function updateFiring(s:Float, c:CanvasRenderingContext2D){
 		if(fire > 0){
 			fire -= s;
 			laserLine.a.set(x, y);
@@ -97,72 +157,42 @@ class Enemy{
 			c.moveTo(x, y);
 			c.lineTo(laserLine.b.x, laserLine.b.y);
 			c.stroke();
-
-			return;
 		}
-		// move toward player
-		var dist = LcMath.distP(x, y, Game.p.x, Game.p.y);
-		var dir = LcMath.dir(x, y, Game.p.x, Game.p.y);
-
-		if(dist > ENGAGE_DISTANCE){
-			xa = Math.cos(dir) * ACC;
-			ya = Math.sin(dir) * ACC;
-		}else{
-			xa = 0;
-			ya = 0;
-		}
-
-		if(dist < FIRE_DISTANCE){
-			fcd -= s;
-
-			if(fcd < 0){
-				fire = 1;
-				fireDir = LcMath.dir(x, y, Game.p.x + Game.p.xs * 0.75, Game.p.y + Game.p.ys * 0.75);
-				fcd = Math.random() * 3 + 2;
-			}
-		}
-
-		// avoid planets
-		var pln = null;
-		for(p in Game.planets){
-			if(LcMath.distP(x, y, p.x, p.y) < INFECT_DISTANCE + p.r){
-				pln = p;
-			}
-		}
-		if(pln != null){
-			var dir = LcMath.dir(pln.x, pln.y, x, y);
-			xa = Math.cos(dir) * ACC;
-			ya = Math.sin(dir) * ACC;
-		}
-
-		// avoid members
-		var mi = swrm.member.indexOf(this) + 1;
-		for(i in mi...swrm.member.length){
-			var m = swrm.member[i];
-			if(LcMath.distP(m.x, m.y, x, y) < AVOID_RADIUS * 2){
-				var dir = LcMath.dir(m.x, m.y, x, y);
-				xa += Math.cos(dir) * ACC;
-				ya += Math.sin(dir) * ACC;
-			}
-		}
-
-		// avoid nearby bullet
 	}
 
 	public inline function updateDisengaged(s:Float, c:CanvasRenderingContext2D){
 		if(swrm.inf != null){
-			xs = swrm.inf.xs;
-			ys = swrm.inf.ys;
+			var dist = LcMath.distP(x, y, swrm.inf.x, swrm.inf.y) - swrm.inf.r;
+			var infDist = dist - (INFECT_DISTANCE + swrm.inf.r);
 
-			//var dist = LcMath.distP(x, y, swrm.inf.x, swrm.inf.y) - swrm.inf.r;
-			//var infDist = dist - INFECT_DISTANCE;
-			//var infDir = LcMath.dir(x, y, swrm.inf.x, swrm.inf.y);
-			
+			if(infDist > MAX_SPEED){
+				// move to surface
+				var infDir = LcMath.dir(x, y, swrm.inf.x, swrm.inf.y);
+				xa = Math.cos(infDir) * ACC;
+				ya = Math.sin(infDir) * ACC;
+			}else{
+				// move to next target (or stay)
+				var tgt = swrm.inf.getClosestDome(this.x, this.y);
+				
+				var dist = LcMath.distP(x, y, tgt.ex, tgt.ey);
+				var dir = LcMath.dir(x, y, tgt.ex, tgt.ey);
 
-			// move to next target (or stay)
-			
-			
+				if(dist > RADIUS){
+					xa = Math.cos(dir) * ACC;
+					ya = Math.sin(dir) * ACC;
+				}else{
+					xa = 0;
+					ya = 0;
+					xs = swrm.inf.xs;
+					ys = swrm.inf.ys;
+					shoot(tgt.aabb.cX(), tgt.aabb.cY(), s);
 
+					if(fire > 0 && fire < 0.5){
+						tgt.hit(DPS * s);
+					}
+				}
+			}
+			
 			// avoid swarm members (raise or lower - give way to counter clockwise) 
 		}else{
 			// return to swarm
@@ -180,5 +210,20 @@ class Enemy{
 			return true;
 		}
 		return false;
+	}
+
+	private function debugLine(c:CanvasRenderingContext2D, vx:Float, vy:Float, s:String){
+		c.strokeStyle = s;
+		c.lineWidth = 1;
+		c.beginPath();
+		c.moveTo(x, y);
+		c.lineTo(x + vx * 10, y + vy * 10);
+		c.stroke();
+	}
+
+	private function debugLineR(c:CanvasRenderingContext2D, dir:Float, s:String){
+		var vx = Math.cos(dir) * 10;
+		var vy = Math.sin(dir) * 10;
+		debugLine(c, vx, vy, s);
 	}
 }

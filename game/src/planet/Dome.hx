@@ -1,5 +1,6 @@
 package planet;
 
+import enemy.Enemy;
 import js.html.CanvasRenderingContext2D;
 import math.AABB;
 
@@ -9,7 +10,11 @@ class Dome{
 	private var p:Planet;
 	private var d:Float;
 
-	private var aabb:AABB;
+	public var aabb(default, null):AABB;
+	private var h:Float = 5;
+
+	public var ex(default, null):Float = 0;
+	public var ey(default, null):Float = 0;
 
 	public function new(p:Planet, d:Float){
 		this.p = p;
@@ -23,11 +28,22 @@ class Dome{
 		aabb.x = x - RADIUS;
 		aabb.y = y - RADIUS;
 
+		ex = p.x + Math.cos(d) * (p.r + Enemy.INFECT_DISTANCE);
+		ey = p.y + Math.sin(d) * (p.r + Enemy.INFECT_DISTANCE);
+
 		if(Game.inView(aabb)){
 			c.fillStyle = "#333";
 			c.beginPath();
 			c.arc(x, y, RADIUS, 0, Math.PI * 2);
 			c.fill();
 		}
+	}
+
+	public inline function isAlive():Bool{
+		return h > 0;
+	}
+
+	public inline function hit(d:Float){
+		h -= d;
 	}
 }
