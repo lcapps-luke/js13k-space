@@ -7,6 +7,7 @@ import sys.io.File;
 class PackMain {
 	private static inline var indexSrc:String = "res/index.html";
 	private static inline var scriptSrc:String = "build/space.js";
+	private static inline var zzfxSrc:String = "res/ZzFXMicro.min.js";
 
 	private static inline var finalDir:String = "build/final/";
 	private static inline var finalUncompressedDir:String = finalDir + "uncompressed/";
@@ -40,9 +41,10 @@ class PackMain {
 	public static function build() {
 		var pageTemplate:String = File.getContent(indexSrc);
 		var script:String = File.getContent(scriptSrc);
+		var zzfx:String = File.getContent(zzfxSrc);
 
 		var tpl:Template = new Template(pageTemplate);
-		var out:String = tpl.execute({src: script});
+		var out:String = tpl.execute({src: script, zzfx: zzfx});
 
 		File.saveContent(finalUncompressedDir + "index.html", out);
 	}

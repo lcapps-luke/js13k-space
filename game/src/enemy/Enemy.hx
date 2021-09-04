@@ -32,6 +32,7 @@ class Enemy{
 	private var fire:Float = 0;
 	private var fireDir:Float = 0;
 	private var laserLine:Line = new Line();
+	private var fireSnd:Bool = true;
 
 	public var aabb(default, null):AABB;
 
@@ -145,12 +146,17 @@ class Enemy{
 				// laser
 				c.strokeStyle = "#F00";
 				c.lineWidth = 1;
+				fireSnd = true;
 			}else{
 				// hit
 				c.strokeStyle = "#F00";
 				c.lineWidth = 3;
 
 				Game.p.checkHit(laserLine);
+				if(fireSnd){
+					Sound.laser();
+					fireSnd = false;
+				}
 			}
 
 			c.beginPath();
@@ -201,10 +207,17 @@ class Enemy{
 	public function check(b:Bullet) {
 		if(health > 0 && aabb.check(b.aabb) && LcMath.distP(x, y, b.x, b.y) < RADIUS + Bullet.RADIUS){
 			health--;
-			
+			if(health <= 0){
+				Sound.explode();
+			}else{
+				Sound.hit();
+			}
+
 			if(!engaged){
 				swrm.engage();
 			}
+
+			
 
 			return true;
 		}

@@ -108,13 +108,17 @@ class Player {
 	}
 
 	private inline function shoot(){
+		Sound.shoot();
 		Game.addPlayerBullet(new Bullet(x, y, Math.cos(Ctrl.aim) * SHOT_SPEED, Math.sin(Ctrl.aim) * SHOT_SPEED));
 	}
 
 	public function checkHit(laserLine:Line) {
-		hitCli.line.copy(laserLine);
-		if(hitCli.update()){
-			alive = false;
+		if(alive){
+			hitCli.line.copy(laserLine);
+			if(hitCli.update()){
+				alive = false;
+				Sound.playerExplode();
+			}
 		}
 	}
 }
