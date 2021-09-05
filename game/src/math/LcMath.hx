@@ -27,4 +27,8 @@ class LcMath{
 			arr[ri] = ce;
 		}
 	}
+
+	public static function cap(v:Float, mi:Float = 0, ma:Float = 1):Float{
+		return v < mi ? mi : (v > ma ? ma : v);
+	}
 }

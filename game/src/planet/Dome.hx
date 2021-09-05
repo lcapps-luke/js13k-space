@@ -1,5 +1,7 @@
 package planet;
 
+import math.LcMath;
+import js.html.ImageCapture;
 import enemy.Enemy;
 import js.html.CanvasRenderingContext2D;
 import math.AABB;
@@ -44,6 +46,12 @@ class Dome{
 	}
 
 	public inline function hit(d:Float){
+		var wa = isAlive();
 		h -= d;
+
+		if(wa && !isAlive()){
+			var pd = LcMath.distP(aabb.cX(), aabb.cY(), Game.p.x, Game.p.y);
+			Sound.playerExplode(LcMath.cap(400 / pd));
+		}
 	}
 }

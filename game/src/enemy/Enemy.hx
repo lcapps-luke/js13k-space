@@ -154,7 +154,7 @@ class Enemy{
 
 				Game.p.checkHit(laserLine);
 				if(fireSnd){
-					Sound.laser();
+					Sound.laser(calculateShotVolume());
 					fireSnd = false;
 				}
 			}
@@ -237,5 +237,10 @@ class Enemy{
 		var vx = Math.cos(dir) * 10;
 		var vy = Math.sin(dir) * 10;
 		debugLine(c, vx, vy, s);
+	}
+
+	private inline function calculateShotVolume():Float{
+		var pd = LcMath.distP(x, y, Game.p.x, Game.p.y);
+		return LcMath.cap(ENGAGE_DISTANCE / pd);
 	}
 }
