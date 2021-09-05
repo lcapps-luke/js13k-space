@@ -14,17 +14,19 @@ class Game {
 	private static inline var SPAWN_SIZE_INCR:Float = 0.2;
 	private static inline var SPAWN_SIZE_CAP:Int = 10;
 	private static inline var SYSTEM_RADIUS:Float = 13000;
-	private static inline var SPAWN_TIME_MIN:Float = 30;
-	private static inline var SPAWN_TIME_VAR:Float = 30;
+	private static inline var SPAWN_TIME_MIN:Float = 20;
+	private static inline var SPAWN_TIME_VAR:Float = 10;
 
 	public static var c(default, null):CanvasRenderingContext2D;
 	public static var p(default, null):Player;
+	@:native("pl")
 	public static var planets(default, null):Array<Planet>;
 	public static var pBlt(default, null):Array<Bullet>;
 	public static var eSwm(default, null):Array<Swarm>;
 
 	public static var v(default, null):AABB;
 	public static var zoom(default, null):Float = 2;
+	@:native("zt")
 	public static var zoomTarget:Float = zoom;
 
 	private static var minimap:Minimap;
@@ -32,10 +34,14 @@ class Game {
 	private static var spawnTimer:Float = 5;
 	private static var spawnSize:Float = 3;
 
+	private static var bg:Array<Bg>;
+
+	@:native("i")
 	public static function init(c:CanvasRenderingContext2D) {
 		Game.c = c;
 	}
 
+	@:native("r")
 	public static function restart(){
 		p = new Player();
 		p.x = 1500;
@@ -82,8 +88,11 @@ class Game {
 		var mmr = c.canvas.height / 8;
 		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, SYSTEM_RADIUS);
 		//new Minimap(c.canvas.width / 2, c.canvas.height - c.canvas.height / 8, c.canvas.height / 8, 8000);
+
+		bg = [new Bg(0.01, 10, 1, 1), new Bg(0.02, 5, 1, 2)];
 	}
 
+	@:native("u")
 	public static function update(s:Float) {
 		updateSpawns(s);
 
@@ -92,6 +101,9 @@ class Game {
 		 */
 		c.fillStyle = "#000";
 		c.fillRect(0, 0, c.canvas.width, c.canvas.height);
+
+		bg[0].update(c, v.cX(), v.cY());
+		bg[1].update(c, v.cX(), v.cY());
 
 		
 		/**
@@ -208,6 +220,7 @@ class Game {
 		}
 	}
 
+	@:native("ist")
 	private static function isTargeted(p:Planet):Bool {
 		for(s in eSwm){
 			if(s.inf == p || s.infTarget == p){

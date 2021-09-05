@@ -6,10 +6,14 @@ import js.html.CanvasRenderingContext2D;
 import js.html.CanvasElement;
 
 class Main {
+	@:native("e")
 	private static var canvas:CanvasElement;
 	public static var c:CanvasRenderingContext2D;
 
+	@:native("l")
 	public static var lastFrame:Float = 0;
+
+	@:native("f")
 	public static var focusReset:Bool = false;
 
 	public static function main() {
