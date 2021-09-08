@@ -13,7 +13,7 @@ class LcMath{
 		return Math.atan2(by - ay, bx - ax);
 	}
 
-	public static function suffle(arr:Array<Dynamic>) {
+	public static function shuffle(arr:Array<Dynamic>) {
 		var ci = arr.length;
 		var ri = 0;
 

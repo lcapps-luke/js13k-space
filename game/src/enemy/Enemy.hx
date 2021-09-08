@@ -198,9 +198,11 @@ class Enemy{
 				}
 			}
 		}else{
-			// return to swarm
-			xa = 0;
-			ya = 0;
+			// move to swarm target
+
+			var infDir = LcMath.dir(x, y, swrm.infTarget.x, swrm.infTarget.y);
+			xa = Math.cos(infDir) * ACC;
+			ya = Math.sin(infDir) * ACC;
 		}
 	}
 

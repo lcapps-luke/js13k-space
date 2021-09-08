@@ -1,11 +1,16 @@
 package;
 
+import resource.ResourceBuilder;
+import js.html.svg.ImageElement;
+import resource.ImageLoader;
 import js.html.FocusEvent;
 import js.Browser;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasElement;
 
 class Main {
+	private static var r(default, null) = ResourceBuilder.build();
+
 	@:native("e")
 	private static var canvas:CanvasElement;
 	public static var c:CanvasRenderingContext2D;
@@ -24,14 +29,17 @@ class Main {
 
 		Ctrl.init(Browser.window, canvas);
 
-		Game.init(canvas.getContext2d());
-		Game.restart();
-
-		Browser.window.requestAnimationFrame(update);
-
 		Browser.window.onfocus = function(e:FocusEvent){
 			focusReset = true;
 		};
+
+		new ImageLoader(r.img, init);
+	}
+
+	private static inline function init(img:Map<String, ImageElement>){
+		Game.init(canvas.getContext2d(), img);
+		Game.restart();
+		Browser.window.requestAnimationFrame(update);
 	}
 
 	public static function onResize() {

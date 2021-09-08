@@ -1,5 +1,6 @@
 package;
 
+import js.html.svg.ImageElement;
 import math.Line;
 import math.CircleLineIntersect;
 import math.LcMath;
@@ -12,6 +13,7 @@ class Player {
 	private static inline var SHOT_COOL_DOWN:Float = 0.33;
 	private static inline var SHOT_SPEED:Float = 600;
 	private static inline var RADIUS:Float = 10;
+	private static inline var SPR_RADIUS:Float = 15;
 	private static inline var ZOOM_DIST:Float = 900;
 
 	public var x:Float = 0;
@@ -23,13 +25,26 @@ class Player {
 	public var alive:Bool = true;
 
 	private var hitCli:CircleLineIntersect = new CircleLineIntersect();
+	private var spr:ImageElement;
+	private var gunSpr:ImageElement;
+
+	private var pNear:Planet;
+	private var pNearDist:Float;
+
+	private var deadTime:Float = 0;
 
 	public function new() {
-		
+		spr = Game.img["player"];
+		gunSpr = Game.img["gun"];
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D) {
 		if(!alive){
+			deadTime += s;
+			if(deadTime > 3 && deadTime < 100){
+				Game.respawn();
+				deadTime = 100;
+			}
 			return;
 		}
 
@@ -66,10 +81,27 @@ class Player {
 			shoot();
 		}
 
-		c.fillStyle = "#00F";
+
+		if(pNearDist < 50){
+			dir = LcMath.dir(pNear.x, pNear.y, x, y);
+		}
+
+		c.save();
+		c.translate(x, y);
+		c.rotate(dir + Math.PI / 2);
+		c.drawImage(spr, -SPR_RADIUS, -SPR_RADIUS, SPR_RADIUS * 2, SPR_RADIUS * 2);
+		
+		c.rotate((Ctrl.aim + Math.PI / 2) - (dir + Math.PI / 2));
+		c.drawImage(gunSpr, -SPR_RADIUS, -SPR_RADIUS, SPR_RADIUS * 2, SPR_RADIUS * 2);
+		c.restore();
+		
+		/*
+		c.strokeStyle = "#00F";
+		c.lineWidth = 1;
 		c.beginPath();
 		c.arc(x, y, RADIUS, 0, Math.PI * 2);
-		c.fill();
+		c.stroke();
+		*/
 	}
 
 	private inline function calculatePlanetAttraction(s:Float):Planet{
@@ -78,6 +110,8 @@ class Player {
 
 		var touchPlanet:Planet = null;
 		var zoom:Float = 0.4;//0.25;
+
+		pNear = null;
 
 		for(p in Game.planets){
 			var dx = p.x - x;
@@ -90,13 +124,20 @@ class Player {
 			ax += Math.cos(dir) * acc;
 			ay += Math.sin(dir) * acc;
 
-			if(dis <= p.r){
+			var sDis = dis - p.r;
+
+			if(sDis <= 0){
 				touchPlanet = p;
 			}
 
 			if(dis - p.r < ZOOM_DIST){
 				zoom = 1;
 			}
+
+			if(pNear == null || sDis < pNearDist){
+				pNearDist = sDis;
+				pNear = p;
+			}			
 		}
 
 		xs += ax * s;

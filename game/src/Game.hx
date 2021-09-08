@@ -1,5 +1,6 @@
 package;
 
+import js.html.svg.ImageElement;
 import enemy.Enemy;
 import enemy.Swarm;
 import math.LcMath;
@@ -9,7 +10,7 @@ import js.html.CanvasRenderingContext2D;
 
 class Game {
 	public static inline var GRAVITY:Float = 1000;
-	private static inline var VIEW_MARGIN:Float = 200;
+	private static inline var VIEW_MARGIN:Float = 100;
 	private static inline var ZOOM_SPEED:Float = 0.25;
 	private static inline var SPAWN_SIZE_INCR:Float = 0.2;
 	private static inline var SPAWN_SIZE_CAP:Int = 10;
@@ -36,9 +37,13 @@ class Game {
 
 	private static var bg:Array<Bg>;
 
+	public static var img(default, null):Map<String,ImageElement>;
+	private static var msk:Mask = new Mask();
+
 	@:native("i")
-	public static function init(c:CanvasRenderingContext2D) {
+	public static function init(c:CanvasRenderingContext2D, img:Map<String, ImageElement>) {
 		Game.c = c;
+		Game.img = img;
 	}
 
 	@:native("r")
@@ -168,6 +173,8 @@ class Game {
 		//c.strokeStyle = "#F00";
 		//c.strokeRect(v.x, v.y, v.w, v.h);
 
+		msk.update(s, c);
+
 		c.restore();
 		//TODO HUD / on-screen controls
 		minimap.update(c);
@@ -208,7 +215,7 @@ class Game {
 			}
 		}
 
-		LcMath.suffle(candidates);
+		LcMath.shuffle(candidates);
 
 		for(c in candidates){
 			var s = spawnForCandidate(c);
@@ -221,9 +228,9 @@ class Game {
 	}
 
 	@:native("ist")
-	private static function isTargeted(p:Planet):Bool {
+	private static function isTargeted(p:Planet, full:Bool = true):Bool {
 		for(s in eSwm){
-			if(s.inf == p || s.infTarget == p){
+			if(s.inf == p || (full && s.infTarget == p)){
 				return true;
 			}
 		}
@@ -242,4 +249,30 @@ class Game {
 		return new Swarm(Math.floor(spawnSize), sx, sy, swarmDiameter, swarmDiameter);
 	}
 
+
+	public static function respawn() {
+		msk.start(0.5, false, function(){
+			var candidates = new Array<Planet>();
+			for(p in planets){
+				if(p.hasAlive() && !isTargeted(p, true)){
+					candidates.push(p);
+				}
+			}
+
+			if(candidates.length > 0){
+				p = new Player();
+				LcMath.shuffle(candidates);
+				var spawnPlanet = candidates[0];
+
+				var dir = Math.random() * (Math.PI * 2);
+				p.x = spawnPlanet.x + Math.cos(dir) * spawnPlanet.r;
+				p.y = spawnPlanet.y + Math.cos(dir) * spawnPlanet.r;
+
+				msk.start(0.5, true);
+			}else{
+				//GAME OVER
+				
+			}
+		});
+	}
 }
