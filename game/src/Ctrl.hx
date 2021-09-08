@@ -1,5 +1,6 @@
 package;
 
+import js.html.TouchEvent;
 import math.LcMath;
 import js.html.CanvasElement;
 import js.html.MouseEvent;
@@ -18,6 +19,10 @@ class Ctrl{
 	private static var mx:Float = 0;
 	private static var my:Float = 0;
 
+	private static var leftTouch:CtrlTouch = null;
+	private static var rightTouch:CtrlTouch = null;
+	public static var deadZone:Float = 100;
+
 	public static function init(w:Window, c:CanvasElement){
 		keys = new Map<String, Bool>();
 
@@ -26,6 +31,11 @@ class Ctrl{
 		c.onmousemove = onMouseMove;
 		w.onmousedown = onMouseDown;
 		w.onmouseup = onMouseUp;
+
+		w.ontouchstart = onTouchStart;
+		w.ontouchmove = onTouchMove;
+		w.ontouchend = onTouchEnd;
+		w.ontouchcancel = onTouchEnd;
 
 		Ctrl.c = c;
 	}
@@ -53,6 +63,65 @@ class Ctrl{
 		trg = false;
 	}
 
+	private static function onTouchStart(e:TouchEvent){
+		for(t in e.changedTouches){
+			var tx = ((t.clientX - c.offsetLeft) / c.clientWidth) * c.width;
+			var ty = ((t.clientY - c.offsetTop) / c.clientHeight) * c.height;
+			
+			if(tx < c.width / 2){
+				if(leftTouch == null){
+					leftTouch = {
+						id: t.identifier,
+						sx: tx,
+						sy: ty,
+						cx: tx,
+						cy: ty
+					};
+				}
+			}else{
+				if(rightTouch == null){
+					rightTouch = {
+						id: t.identifier,
+						sx: tx,
+						sy: ty,
+						cx: tx,
+						cy: ty
+					};
+				}
+			}
+		}
+	}
+
+	private static function onTouchMove(e:TouchEvent){
+		for(t in e.changedTouches){
+			var ct:CtrlTouch;
+
+			if(leftTouch != null && leftTouch.id == t.identifier){
+				ct = leftTouch;
+			}else if(rightTouch != null && rightTouch.id == t.identifier){
+				ct = rightTouch;
+			}else{
+				continue;
+			}
+
+			ct.cx = ((t.clientX - c.offsetLeft) / c.clientWidth) * c.width;
+			ct.cy = ((t.clientY - c.offsetTop) / c.clientHeight) * c.height;
+		}
+	}
+
+	private static function onTouchEnd(e:TouchEvent){
+		for(t in e.changedTouches){
+			if(leftTouch != null && leftTouch.id == t.identifier){
+				leftTouch = null;
+				acc = 0;
+			}
+			if(rightTouch != null && rightTouch.id == t.identifier){
+				rightTouch = null;
+				trg = false;
+			}
+		}
+	}
+
 	private static function updateKeys(){
 		var dx = 0;
 		var dy = 0;
@@ -76,8 +145,32 @@ class Ctrl{
 
 	public static function update()
 	{
-		var spx = Game.screenX(Game.p.x);
-		var spy = Game.screenY(Game.p.y);
-		aim = LcMath.dir(spx, spy, mx, my);
+		if(rightTouch == null){
+			var spx = Game.screenX(Game.p.x);
+			var spy = Game.screenY(Game.p.y);
+			aim = LcMath.dir(spx, spy, mx, my);
+		}else{
+			//TODO touch aim
+			aim = LcMath.dir(rightTouch.sx, rightTouch.sy, rightTouch.cx, rightTouch.cy);
+			trg = LcMath.distP(rightTouch.sx, rightTouch.sy, rightTouch.cx, rightTouch.cy) > deadZone;
+		}
+
+		if(leftTouch != null){
+			if(LcMath.distP(leftTouch.sx, leftTouch.sy, leftTouch.cx, leftTouch.cy) > deadZone){
+				acc = 1;
+			}else{
+				acc = 0;
+			}
+
+			dir = LcMath.dir(leftTouch.sx, leftTouch.sy, leftTouch.cx, leftTouch.cy);
+		}
 	}
 }
+
+typedef CtrlTouch = {
+	var id:Int;
+	var sx:Float;
+	var sy:Float;
+	var cx:Float;
+	var cy:Float;
+};
