@@ -39,6 +39,7 @@ class Game {
 
 	public static var img(default, null):Map<String,ImageElement>;
 	private static var msk:Mask = new Mask();
+	private static var txt:String = "";
 
 	@:native("i")
 	public static function init(c:CanvasRenderingContext2D, img:Map<String, ImageElement>) {
@@ -176,6 +177,11 @@ class Game {
 		msk.update(s, c);
 
 		c.restore();
+
+		c.font = "48px sans-serif";
+		c.fillStyle = "#FFF";
+		c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height / 2);
+
 		//TODO HUD / on-screen controls
 		minimap.update(c);
 	}
@@ -271,7 +277,7 @@ class Game {
 				msk.start(0.5, true);
 			}else{
 				//GAME OVER
-				
+				txt = "Game Over";
 			}
 		});
 	}
