@@ -9,7 +9,7 @@ import js.html.CanvasRenderingContext2D;
 
 class Player {
 	private static inline var MAX_SPEED:Float = 600;
-	private static inline var THRUST:Float = 400;
+	private static inline var THRUST:Float = 800;
 	private static inline var SHOT_COOL_DOWN:Float = 0.33;
 	private static inline var SHOT_SPEED:Float = 600;
 	private static inline var RADIUS:Float = 10;
