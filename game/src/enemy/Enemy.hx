@@ -1,5 +1,7 @@
 package enemy;
 
+import js.html.svg.ImageElement;
+import ptcl.ExpPtcl;
 import math.Line;
 import math.LcMath;
 import math.AABB;
@@ -35,6 +37,8 @@ class Enemy{
 	private var fireSnd:Bool = true;
 
 	public var aabb(default, null):AABB;
+	private var spr:ImageElement;
+	private var dir:Float = 0;
 
 	public function new(x:Float, y:Float, h:Int, s:Swarm){
 		this.x = x;
@@ -43,6 +47,7 @@ class Enemy{
 		this.swrm = s;
 
 		aabb = new AABB(x, y, RADIUS * 2, RADIUS * 2);
+		spr = Game.img["enemy"];
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D):Bool{
@@ -53,13 +58,13 @@ class Enemy{
 		xs = xs * 0.9;
 		ys = ys * 0.9;
 
-		updateFiring(s, c);
-
 		if(engaged){
 			updateEngaged(s, c);
 		}else{
 			updateDisengaged(s, c);
 		}
+
+		updateFiring(s, c);
 
 		// avoid planets
 		var pln = null;
@@ -95,10 +100,11 @@ class Enemy{
 		aabb.y = y - RADIUS;
 
 		if(Game.inView(aabb)){
-			c.fillStyle = "#E0F";
-			c.beginPath();
-			c.arc(x, y, RADIUS, 0, Math.PI * 2);
-			c.fill();
+			c.save();
+			c.translate(x, y);
+			c.rotate(dir + Math.PI / 2);
+			c.drawImage(spr, -RADIUS, -RADIUS, aabb.w, aabb.h);
+			c.restore();
 		}
 
 		return true;
@@ -107,7 +113,7 @@ class Enemy{
 	public inline function updateEngaged(s:Float, c:CanvasRenderingContext2D){
 		// move toward player
 		var dist = LcMath.distP(x, y, Game.p.x, Game.p.y);
-		var dir = LcMath.dir(x, y, Game.p.x, Game.p.y);
+		dir = LcMath.dir(x, y, Game.p.x, Game.p.y);
 
 		if(dist > ENGAGE_DISTANCE){
 			xa = Math.cos(dir) * ACC;
@@ -159,6 +165,8 @@ class Enemy{
 				}
 			}
 
+			dir = fireDir;
+
 			c.beginPath();
 			c.moveTo(x, y);
 			c.lineTo(laserLine.b.x, laserLine.b.y);
@@ -175,16 +183,17 @@ class Enemy{
 
 			if(infDist > MAX_SPEED || tgt == null){
 				// move to surface
-				var infDir = LcMath.dir(x, y, swrm.inf.x, swrm.inf.y);
-				xa = Math.cos(infDir) * ACC;
-				ya = Math.sin(infDir) * ACC;
+				dir = LcMath.dir(x, y, swrm.inf.x, swrm.inf.y);
+				xa = Math.cos(dir) * ACC;
+				ya = Math.sin(dir) * ACC;
 			}else{
 				var dist = LcMath.distP(x, y, tgt.ex, tgt.ey);
-				var dir = LcMath.dir(x, y, tgt.ex, tgt.ey);
+				var edir = LcMath.dir(x, y, tgt.ex, tgt.ey);
+				dir = LcMath.dir(x, y, tgt.aabb.cX(), tgt.aabb.cY());
 
 				if(dist > RADIUS){
-					xa = Math.cos(dir) * ACC;
-					ya = Math.sin(dir) * ACC;
+					xa = Math.cos(edir) * ACC;
+					ya = Math.sin(edir) * ACC;
 				}else{
 					xa = 0;
 					ya = 0;
@@ -200,10 +209,12 @@ class Enemy{
 		}else{
 			// move to swarm target
 
-			var infDir = LcMath.dir(x, y, swrm.infTarget.x, swrm.infTarget.y);
-			xa = Math.cos(infDir) * ACC;
-			ya = Math.sin(infDir) * ACC;
+			dir = LcMath.dir(x, y, swrm.infTarget.x, swrm.infTarget.y);
+			xa = Math.cos(dir) * ACC;
+			ya = Math.sin(dir) * ACC;
 		}
+
+		
 	}
 
 	public function check(b:Bullet) {
@@ -211,6 +222,7 @@ class Enemy{
 			health--;
 			if(health <= 0){
 				Sound.explode();
+				Game.emitParticles(new ExpPtcl(x, y));
 			}else{
 				Sound.hit();
 			}
@@ -218,8 +230,6 @@ class Enemy{
 			if(!engaged){
 				swrm.engage();
 			}
-
-			
 
 			return true;
 		}

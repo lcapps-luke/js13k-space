@@ -1,5 +1,6 @@
 package;
 
+import ptcl.PtclSys;
 import js.html.svg.ImageElement;
 import enemy.Enemy;
 import enemy.Swarm;
@@ -40,6 +41,8 @@ class Game {
 	public static var img(default, null):Map<String,ImageElement>;
 	private static var msk:Mask = new Mask();
 	private static var txt:String = "";
+
+	private static var ptcl = new Array<PtclSys>();
 
 	@:native("i")
 	public static function init(c:CanvasRenderingContext2D, img:Map<String, ImageElement>) {
@@ -170,6 +173,16 @@ class Game {
 			eSwm.remove(lastDead);
 		}
 
+		var lastDead = null;
+		for(p in ptcl){
+			if(!p.update(s, c)){
+				lastDead = p;
+			}
+		}
+		if(lastDead != null){
+			ptcl.remove(lastDead);
+		}
+
 		//View debug
 		//c.strokeStyle = "#F00";
 		//c.strokeRect(v.x, v.y, v.w, v.h);
@@ -280,5 +293,9 @@ class Game {
 				txt = "Game Over";
 			}
 		});
+	}
+
+	public static inline function emitParticles(sys:PtclSys){
+		ptcl.push(sys);
 	}
 }

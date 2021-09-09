@@ -1,5 +1,6 @@
 package;
 
+import ptcl.ExpPtcl;
 import js.html.svg.ImageElement;
 import math.Line;
 import math.CircleLineIntersect;
@@ -159,6 +160,7 @@ class Player {
 			if(hitCli.update()){
 				alive = false;
 				Sound.playerExplode();
+				Game.emitParticles(new ExpPtcl(x, y));
 			}
 		}
 	}

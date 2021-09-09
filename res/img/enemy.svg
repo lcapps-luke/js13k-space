@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   viewBox="0 0 64 64"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="enemy.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     units="px"
+     inkscape:zoom="8.3856039"
+     inkscape:cx="22.836757"
+     inkscape:cy="36.968119"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid824"
+       empspacing="2"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path4279"
+       style="fill:#31967e;fill-opacity:1;fill-rule:evenodd;stroke-width:0.608258;stroke-linecap:round;stroke-linejoin:round;stroke:#000000;stroke-opacity:1"
+       d="M 38.546875 16.244141 A 6.6141734 6.6141734 0 0 1 38.550781 16.40625 A 6.6141734 6.6141734 0 0 1 31.9375 23.021484 A 6.6141734 6.6141734 0 0 1 25.324219 16.435547 A 18.897638 18.897638 0 0 0 13.228516 34.015625 A 18.897638 18.897638 0 0 0 32.126953 52.914062 A 18.897638 18.897638 0 0 0 51.023438 34.015625 A 18.897638 18.897638 0 0 0 38.546875 16.244141 z " />
+    <path
+       id="path853"
+       style="fill:#d74e9a;fill-rule:evenodd;stroke-width:0.498898;stroke-linecap:round;stroke-linejoin:round;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+       d="M 15.439453 4.6757812 A 32 32 0 0 0 0 32 A 32 32 0 0 0 32 64 A 32 32 0 0 0 64 32 A 32 32 0 0 0 48.960938 4.875 A 18.897638 18.897638 0 0 1 51.023438 13.449219 A 18.897638 18.897638 0 0 1 32.126953 32.345703 A 18.897638 18.897638 0 0 1 13.228516 13.449219 A 18.897638 18.897638 0 0 1 15.439453 4.6757812 z " />
+  </g>
+</svg>

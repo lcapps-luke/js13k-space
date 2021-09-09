@@ -29,11 +29,19 @@ class AABB{
 	}
 
 	public function add(o:AABB){
-		var nx = Math.min(x, o.x);
-		var ny = Math.min(y, o.y);
+		addR(o.x, o.y, o.w, o.h);
+	}
 
-		w = Math.max(x + w, o.x + o.w) - nx;
-		h = Math.max(y + h, o.y + o.h) - ny;
+	public function addC(x:Float, y:Float, r:Float){
+		addR(x - r, y - r, r * 2, r * 2);
+	}
+
+	public function addR(ox:Float, oy:Float, ow:Float, oh:Float){
+		var nx = Math.min(x, ox);
+		var ny = Math.min(y, oy);
+
+		w = Math.max(x + w, ox + ow) - nx;
+		h = Math.max(y + h, oy + oh) - ny;
 
 		x = nx;
 		y = ny;
