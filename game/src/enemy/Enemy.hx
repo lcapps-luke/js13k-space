@@ -223,6 +223,7 @@ class Enemy{
 			if(health <= 0){
 				Sound.explode();
 				Game.emitParticles(new ExpPtcl(x, y));
+				Stats.enemyKilled();
 			}else{
 				Sound.hit();
 			}

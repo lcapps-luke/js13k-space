@@ -11,11 +11,12 @@ import js.html.CanvasRenderingContext2D;
 class Player {
 	private static inline var MAX_SPEED:Float = 600;
 	private static inline var THRUST:Float = 800;
-	private static inline var SHOT_COOL_DOWN:Float = 0.33;
+	private static inline var SHOT_COOL_DOWN:Float = 0.15;
 	private static inline var SHOT_SPEED:Float = 600;
 	private static inline var RADIUS:Float = 10;
 	private static inline var SPR_RADIUS:Float = 15;
 	private static inline var ZOOM_DIST:Float = 900;
+	private static inline var ACCURACY:Float = 3.14 / 16;
 
 	public var x:Float = 0;
 	public var y:Float = 0;
@@ -95,14 +96,6 @@ class Player {
 		c.rotate((Ctrl.aim + Math.PI / 2) - (dir + Math.PI / 2));
 		c.drawImage(gunSpr, -SPR_RADIUS, -SPR_RADIUS, SPR_RADIUS * 2, SPR_RADIUS * 2);
 		c.restore();
-		
-		/*
-		c.strokeStyle = "#00F";
-		c.lineWidth = 1;
-		c.beginPath();
-		c.arc(x, y, RADIUS, 0, Math.PI * 2);
-		c.stroke();
-		*/
 	}
 
 	private inline function calculatePlanetAttraction(s:Float):Planet{
@@ -151,7 +144,9 @@ class Player {
 
 	private inline function shoot(){
 		Sound.shoot();
-		Game.addPlayerBullet(new Bullet(x, y, Math.cos(Ctrl.aim) * SHOT_SPEED, Math.sin(Ctrl.aim) * SHOT_SPEED));
+		var sdir = Ctrl.aim - ACCURACY / 2 + Math.random() * ACCURACY;
+		Game.addPlayerBullet(new Bullet(x, y, Math.cos(sdir) * SHOT_SPEED, Math.sin(sdir) * SHOT_SPEED));
+		Stats.shotFired();
 	}
 
 	public function checkHit(laserLine:Line) {
@@ -161,6 +156,7 @@ class Player {
 				alive = false;
 				Sound.playerExplode();
 				Game.emitParticles(new ExpPtcl(x, y));
+				Stats.playerKilled();
 			}
 		}
 	}

@@ -40,7 +40,8 @@ class Game {
 
 	public static var img(default, null):Map<String,ImageElement>;
 	private static var msk:Mask = new Mask();
-	private static var txt:String = "";
+	private static var gameOver:Bool = false;
+	private static var statsText:Array<String> = null;
 
 	private static var ptcl = new Array<PtclSys>();
 	private static var tut = new Array<TutText>();
@@ -107,11 +108,17 @@ class Game {
 			new TutText(["Move:", "W,A,S,D / ←,→,↑,↓", "or", "👆 (left side)"], 0, 0, c.canvas.width / 2, c.canvas.height),
 			new TutText(["Shoot:", "🖰", "or", "👆 (right side)"], c.canvas.width / 2, 0, c.canvas.width / 2, c.canvas.height)
 		];
+
+		Stats.reset();
+		statsText = null;
+		gameOver = false;
 	}
 
 	@:native("u")
 	public static function update(s:Float) {
 		updateSpawns(s);
+
+		Stats.update(s);
 
 		/**
 		 *  background
@@ -178,6 +185,7 @@ class Game {
 			}
 		}
 		if(lastDead != null){
+			Stats.swarmKilled();
 			eSwm.remove(lastDead);
 		}
 
@@ -199,9 +207,26 @@ class Game {
 
 		c.restore();
 
-		c.font = "48px sans-serif";
-		c.fillStyle = "#FFF";
-		c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height / 2);
+		if(gameOver){
+			c.font = "48px sans-serif";
+			c.fillStyle = "#FFF";
+			var txt = "Game Over";
+			c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, 94);
+
+			var maxWidth:Float = -1;
+			var height = statsText.length * 48;
+			for(s in statsText){
+				maxWidth = Math.max(maxWidth, c.measureText(s).width);
+			}
+
+			c.font = "32px sans-serif";
+			var ya = c.canvas.height / 2 - height / 2;
+			for(s in statsText){
+				c.fillText(s, c.canvas.width / 2 - maxWidth / 2, ya);
+				ya += 48;
+			}
+
+		}
 
 
 		if(tutStage < 2){
@@ -313,7 +338,10 @@ class Game {
 				msk.start(0.5, true);
 			}else{
 				//GAME OVER
-				txt = "Game Over";
+				gameOver = true;
+				if(statsText == null){
+					statsText = Stats.makeText();
+				}
 			}
 		});
 	}
