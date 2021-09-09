@@ -43,6 +43,9 @@ class Game {
 	private static var txt:String = "";
 
 	private static var ptcl = new Array<PtclSys>();
+	private static var tut = new Array<TutText>();
+	private static var tutStage:Int = 0;
+	private static var tutProg:Float = 0;
 
 	@:native("i")
 	public static function init(c:CanvasRenderingContext2D, img:Map<String, ImageElement>) {
@@ -99,6 +102,11 @@ class Game {
 		//new Minimap(c.canvas.width / 2, c.canvas.height - c.canvas.height / 8, c.canvas.height / 8, 8000);
 
 		bg = [new Bg(0.01, 10, 1, 1), new Bg(0.02, 5, 1, 2)];
+
+		tut = [
+			new TutText(["Move:", "W,A,S,D / ←,→,↑,↓", "or", "👆 (left side)"], 0, 0, c.canvas.width / 2, c.canvas.height),
+			new TutText(["Shoot:", "🖰", "or", "👆 (right side)"], c.canvas.width / 2, 0, c.canvas.width / 2, c.canvas.height)
+		];
 	}
 
 	@:native("u")
@@ -194,6 +202,21 @@ class Game {
 		c.font = "48px sans-serif";
 		c.fillStyle = "#FFF";
 		c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height / 2);
+
+
+		if(tutStage < 2){
+			if((tutStage == 0 && Ctrl.acc > 0) || (tutStage == 1 && Ctrl.trg)){
+				tutProg += s;
+			}
+
+			tut[tutStage].update(s, c);
+
+			if(tutProg > 1){
+				tutProg = 0;
+				tutStage++;
+			}
+		}
+
 
 		//TODO HUD / on-screen controls
 		minimap.update(c);
