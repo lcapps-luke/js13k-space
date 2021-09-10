@@ -16,8 +16,10 @@ class Ctrl{
 	private static var keys:Map<String, Bool>;
 	private static var c:CanvasElement;
 
-	private static var mx:Float = 0;
-	private static var my:Float = 0;
+	public static var mx(default, null):Float = 0;
+	public static var my(default, null):Float = 0;
+	private static var mTouch:Int = -1;
+	public static var justReleased(default, null):Bool = false;
 
 	private static var leftTouch:CtrlTouch = null;
 	private static var rightTouch:CtrlTouch = null;
@@ -61,6 +63,7 @@ class Ctrl{
 
 	private static function onMouseUp(e:MouseEvent){
 		trg = false;
+		justReleased = true;
 	}
 
 	private static function onTouchStart(e:TouchEvent){
@@ -106,6 +109,10 @@ class Ctrl{
 
 			ct.cx = ((t.clientX - c.offsetLeft) / c.clientWidth) * c.width;
 			ct.cy = ((t.clientY - c.offsetTop) / c.clientHeight) * c.height;
+
+			mx = ct.cx;
+			my = ct.cy;
+			mTouch = t.identifier;
 		}
 	}
 
@@ -118,6 +125,10 @@ class Ctrl{
 			if(rightTouch != null && rightTouch.id == t.identifier){
 				rightTouch = null;
 				trg = false;
+			}
+
+			if(t.identifier == mTouch){
+				justReleased = true;
 			}
 		}
 	}
@@ -164,6 +175,10 @@ class Ctrl{
 
 			dir = LcMath.dir(leftTouch.sx, leftTouch.sy, leftTouch.cx, leftTouch.cy);
 		}
+	}
+
+	public static function reset(){
+		justReleased = false;
 	}
 }
 

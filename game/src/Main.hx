@@ -21,25 +21,28 @@ class Main {
 	@:native("f")
 	public static var focusReset:Bool = false;
 
+	private static var playing:Bool = false;
+
 	public static function main() {
 		canvas = cast Browser.window.document.getElementById("c");
+		c = canvas.getContext2d();
 
 		Browser.window.document.body.onresize = onResize;
 		onResize();
 
-		Ctrl.init(Browser.window, canvas);
+		restart();
 
 		Browser.window.onfocus = function(e:FocusEvent){
 			focusReset = true;
 		};
 
 		new ImageLoader(r.img, init);
+
+		Browser.window.requestAnimationFrame(update);
 	}
 
 	private static inline function init(img:Map<String, ImageElement>){
-		Game.init(canvas.getContext2d(), img);
-		Game.restart();
-		Browser.window.requestAnimationFrame(update);
+		Game.init(c, img);
 	}
 
 	public static function onResize() {
@@ -55,9 +58,26 @@ class Main {
 			focusReset = false;
 		}
 
-		Ctrl.update();
-		Game.update((s - lastFrame) / 1000);
+		if(playing){
+			Ctrl.update();
+			Game.update((s - lastFrame) / 1000);
+			Ctrl.reset();
+		}else{
+			Menu.update((s - lastFrame) / 1000, c);
+		}
+
 		lastFrame = s;
 		Browser.window.requestAnimationFrame(update);
+	}
+
+	public static function restart(){
+		playing = false;
+		Menu.init(canvas);
+		Menu.startCallback = function(){
+			Menu.startCallback = null;
+			Ctrl.init(Browser.window, canvas);
+			playing = true;
+			Game.restart();
+		};
 	}
 }

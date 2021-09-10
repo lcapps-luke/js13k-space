@@ -29,12 +29,12 @@ class Mask{
 			a = 1 - a;
 		}
 
-		trace('$t / $d -> $a');
-
-		c.fillStyle = "#000";
-		c.globalAlpha = a;
-		c.fillRect(Game.v.x, Game.v.y, Game.v.w, Game.v.h);
-		c.globalAlpha = 1;
+		if(a > 0){
+			c.fillStyle = "#000";
+			c.globalAlpha = a;
+			c.fillRect(0, 0, c.canvas.width, c.canvas.height);
+			c.globalAlpha = 1;
+		}
 	}
 
 	public function start(d:Float, i:Bool, cb:Void->Void = null){

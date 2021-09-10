@@ -47,11 +47,15 @@ class Game {
 	private static var tut = new Array<TutText>();
 	private static var tutStage:Int = 0;
 	private static var tutProg:Float = 0;
+	private static var restartTimer:Float = 0;
+	private static var restartRegion:AABB;
 
 	@:native("i")
 	public static function init(c:CanvasRenderingContext2D, img:Map<String, ImageElement>) {
 		Game.c = c;
 		Game.img = img;
+
+		restartRegion = new AABB(c.canvas.width * 0.33, c.canvas.height * 0.69, c.canvas.width * 0.34, c.canvas.height * 0.12);
 	}
 
 	@:native("r")
@@ -112,6 +116,9 @@ class Game {
 		Stats.reset();
 		statsText = null;
 		gameOver = false;
+
+		msk.start(0.5, true);
+		restartTimer = 0;
 	}
 
 	@:native("u")
@@ -199,13 +206,10 @@ class Game {
 			ptcl.remove(lastDead);
 		}
 
-		//View debug
-		//c.strokeStyle = "#F00";
-		//c.strokeRect(v.x, v.y, v.w, v.h);
-
-		msk.update(s, c);
-
 		c.restore();
+
+		minimap.update(c);
+		msk.update(s, c);
 
 		if(gameOver){
 			c.font = "48px sans-serif";
@@ -213,19 +217,33 @@ class Game {
 			var txt = "Game Over";
 			c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, 94);
 
+			c.font = "32px sans-serif";
 			var maxWidth:Float = -1;
 			var height = statsText.length * 48;
 			for(s in statsText){
 				maxWidth = Math.max(maxWidth, c.measureText(s).width);
 			}
 
-			c.font = "32px sans-serif";
 			var ya = c.canvas.height / 2 - height / 2;
 			for(s in statsText){
 				c.fillText(s, c.canvas.width / 2 - maxWidth / 2, ya);
 				ya += 48;
 			}
 
+			if(restartTimer > 1){
+				var over = restartRegion.contains(Ctrl.mx, Ctrl.my);
+
+				c.font = "48px sans-serif";
+				c.fillStyle = "#FFF";
+				txt = over ? "-RESTART-" : "RESTART";
+				c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height * 0.75);
+
+				if(Ctrl.justReleased && over){
+					Main.restart();
+				}
+			}else{
+				restartTimer += s;
+			}
 		}
 
 
@@ -241,10 +259,6 @@ class Game {
 				tutStage++;
 			}
 		}
-
-
-		//TODO HUD / on-screen controls
-		minimap.update(c);
 	}
 
 	public static inline function inView(o:AABB):Bool{
