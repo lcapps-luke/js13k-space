@@ -13,10 +13,10 @@ class Game {
 	public static inline var GRAVITY:Float = 1000;
 	private static inline var VIEW_MARGIN:Float = 100;
 	private static inline var ZOOM_SPEED:Float = 0.25;
-	private static inline var SPAWN_SIZE_INCR:Float = 0.2;
+	private static inline var SPAWN_SIZE_INCR:Float = 0.3;
 	private static inline var SPAWN_SIZE_CAP:Int = 10;
 	private static inline var SYSTEM_RADIUS:Float = 13000;
-	private static inline var SPAWN_TIME_MIN:Float = 20;
+	private static inline var SPAWN_TIME_MIN:Float = 10;
 	private static inline var SPAWN_TIME_VAR:Float = 10;
 
 	public static var c(default, null):CanvasRenderingContext2D;
@@ -33,8 +33,8 @@ class Game {
 
 	private static var minimap:Minimap;
 
-	private static var spawnTimer:Float = 5;
-	private static var spawnSize:Float = 3;
+	private static var spawnTimer:Float = 0;
+	private static var spawnSize:Float = 1;
 
 	private static var bg:Array<Bg>;
 
@@ -61,26 +61,24 @@ class Game {
 	@:native("r")
 	public static function restart(){
 		p = new Player();
-		p.x = 1500;
-		p.y = -1500 - 300;
 
 		pBlt = new Array<Bullet>();
 		eSwm = new Array<Swarm>();
 		
 		planets = new Array<Planet>();
 		
-		var sun = new Planet(0, 0, 1000, 100000, "#FEE", 0);
+		var sun = new Planet(0, 0, 1000, 700000, "#FEE", 0);
 		planets.push(sun);
 
-		var g = new Planet(1500, -1500, 300, 5000, "#888", 3);
+		var g = new Planet(1500, -1500, 300, 50000, "#888", 3);
 		g.orbit(sun, 3.14 / 300);
 		planets.push(g);
 
-		var gr = new Planet(3000, 3000, 600, 20000, "#0F8", 5);
+		var gr = new Planet(3000, 3000, 600, 200000, "#0F8", 5);
 		gr.orbit(sun, -3.14 / 600);
 		planets.push(gr);
 
-		var r = new Planet(-4500, 4500, 900, 30000, "#F88", 8);
+		var r = new Planet(-4500, 4500, 900, 300000, "#F88", 8);
 		r.orbit(sun, 3.14 / 1000);
 		planets.push(r);
 
@@ -88,23 +86,25 @@ class Game {
 		o.orbit(sun, 3.14 / 1000);
 		planets.push(o);
 
-		var b = new Planet(7000, -7000, 900, 30000, "#08F", 10);
+		var b = new Planet(7000, -7000, 900, 300000, "#08F", 10);
 		b.orbit(sun, 3.14 / 3600);
 		planets.push(b);
 
-		var s = new Planet(6000, -6000, 200, 1000, "#808", 2);
+		var s = new Planet(6000, -6000, 200, 10000, "#808", 2);
 		s.orbit(b, 3.14 / 180);
 		planets.push(s);
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
 
-		var s = new Swarm(1, gr.x - gr.r, gr.y - gr.r, gr.r * 2, gr.r * 2);
-		s.bind(gr);
-		eSwm.push(s);
+		var spawnPlanet = planets[Math.ceil(Math.random() * planets.length)];
+		var dir = Math.random() * (Math.PI * 2);
+		p.x = spawnPlanet.x + Math.cos(dir) * spawnPlanet.r;
+		p.y = spawnPlanet.y + Math.sin(dir) * spawnPlanet.r;
 
-		var mmr = c.canvas.height / 8;
+
+
+		var mmr = c.canvas.height / 6;
 		minimap = new Minimap(c.canvas.width  - mmr, mmr, mmr, SYSTEM_RADIUS);
-		//new Minimap(c.canvas.width / 2, c.canvas.height - c.canvas.height / 8, c.canvas.height / 8, 8000);
 
 		bg = [new Bg(0.01, 10, 1, 1), new Bg(0.02, 5, 1, 2)];
 
@@ -119,6 +119,9 @@ class Game {
 
 		msk.start(0.5, true);
 		restartTimer = 0;
+
+		spawnTimer = 0;
+		spawnSize = 1;
 	}
 
 	@:native("u")
@@ -311,7 +314,7 @@ class Game {
 	@:native("ist")
 	private static function isTargeted(p:Planet, full:Bool = true):Bool {
 		for(s in eSwm){
-			if(s.inf == p || (full && s.infTarget == p)){
+			if(s.inf == p || (s.infTarget == p && full)){
 				return true;
 			}
 		}
@@ -335,7 +338,7 @@ class Game {
 		msk.start(0.5, false, function(){
 			var candidates = new Array<Planet>();
 			for(p in planets){
-				if(p.hasAlive() && !isTargeted(p, true)){
+				if(p.hasAlive() && !isTargeted(p, false)){
 					candidates.push(p);
 				}
 			}
@@ -347,7 +350,7 @@ class Game {
 
 				var dir = Math.random() * (Math.PI * 2);
 				p.x = spawnPlanet.x + Math.cos(dir) * spawnPlanet.r;
-				p.y = spawnPlanet.y + Math.cos(dir) * spawnPlanet.r;
+				p.y = spawnPlanet.y + Math.sin(dir) * spawnPlanet.r;
 
 				msk.start(0.5, true);
 			}else{
