@@ -33,6 +33,7 @@ class Enemy{
 	private var fcd:Float = 2;
 	private var fire:Float = 0;
 	private var fireDir:Float = 0;
+	private var fireDist:Float = LASER_DIST;
 	private var laserLine:Line = new Line();
 	private var fireSnd:Bool = true;
 
@@ -125,6 +126,7 @@ class Enemy{
 
 		if(dist < FIRE_DISTANCE){
 			shoot(Game.p.x + Game.p.xs * 0.75, Game.p.y + Game.p.ys * 0.75, s);
+			fireDist = FIRE_DISTANCE;
 		}
 
 		if(!Game.p.alive){
@@ -146,7 +148,7 @@ class Enemy{
 		if(fire > 0){
 			fire -= s;
 			laserLine.a.set(x, y);
-			laserLine.b.set(x + Math.cos(fireDir) * LASER_DIST, y + Math.sin(fireDir) * LASER_DIST);
+			laserLine.b.set(x + Math.cos(fireDir) * fireDist, y + Math.sin(fireDir) * fireDist);
 
 			if(fire > 0.5){
 				// laser
@@ -199,6 +201,8 @@ class Enemy{
 					ya = 0;
 					xs = swrm.inf.xs;
 					ys = swrm.inf.ys;
+
+					fireDist = LcMath.distP(x, y, tgt.aabb.cX(), tgt.aabb.cY());
 					shoot(tgt.aabb.cX(), tgt.aabb.cY(), s);
 
 					if(fire > 0 && fire < 0.5){
