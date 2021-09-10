@@ -97,4 +97,8 @@ class Planet{
 	public inline function hasAlive():Bool{
 		return alive > 0;
 	}
+
+	public function hasDomes() {
+		return domes.length > 0;
+	}
 }

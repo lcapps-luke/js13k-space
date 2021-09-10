@@ -7,12 +7,14 @@ class Minimap{
 	private var y:Float;
 	private var r:Float;
 	private var ratio:Float;
+	private var iconSize:Int;
 
 	public function new(x:Float, y:Float, r:Float, wr:Float){
 		this.x = x;
 		this.y = y;
 		this.r = r;
 		this.ratio = r / wr;
+		iconSize = Math.round(r * 0.15);
 	}
 
 	public function update(c:CanvasRenderingContext2D){
@@ -33,12 +35,27 @@ class Minimap{
 			c.beginPath();
 			c.arc(x + p.x * ratio, y + p.y * ratio, pr, 0, Math.PI * 2);
 			c.fill();
+
+			if(!p.hasAlive() && p.hasDomes()){
+				c.fillStyle = "#FFF";
+				c.font = 'bold ${iconSize}px sans-serif';
+				var iWh = c.measureText("☠").width / 2;
+				c.fillText("☠", x + p.x * ratio - iWh, y + p.y * ratio + iWh);
+			}
 		}
 
 		drawTriangle(c, x + Game.p.x * ratio, y + Game.p.y * ratio, 5, "#0F0");
 
+		c.fillStyle = "#F00";
+		c.font = 'bold ${iconSize}px sans-serif';
+		var iWh = c.measureText("⚔").width / 2;
 		for(e in Game.eSwm){
-			drawTriangle(c, x + e.aabb.cX() * ratio, y + e.aabb.cY() * ratio, 8, "#F00");
+			if(e.inf != null){
+				c.fillText("⚔", x + e.aabb.cX() * ratio - iWh, y + e.aabb.cY() * ratio + iWh);
+			}else{
+				drawTriangle(c, x + e.aabb.cX() * ratio, y + e.aabb.cY() * ratio, 8, "#F00");
+			}
+
 		}
 	}
 
