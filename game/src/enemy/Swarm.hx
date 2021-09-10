@@ -114,7 +114,6 @@ class Swarm{
 
 			if(aabb.check(infTarget.aabb)){
 				bind(infTarget);
-				infTarget = null;
 			}
 		}
 
@@ -134,6 +133,7 @@ class Swarm{
 
 	public inline function bind(p:Planet){
 		inf = p;
+		infTarget = null;
 	}
 
 	public function engage(){

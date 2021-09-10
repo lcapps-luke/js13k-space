@@ -211,11 +211,13 @@ class Enemy{
 				}
 			}
 		}else{
-			// move to swarm target
-
 			dir = LcMath.dir(x, y, swrm.infTarget.x, swrm.infTarget.y);
 			xa = Math.cos(dir) * ACC;
 			ya = Math.sin(dir) * ACC;
+
+			if(LcMath.distP(x, y, swrm.infTarget.x, swrm.infTarget.y) < AVOID_DISTANCE + swrm.infTarget.r){
+				swrm.bind(swrm.infTarget);
+			}
 		}
 
 		
