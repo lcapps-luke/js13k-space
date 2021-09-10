@@ -64,6 +64,10 @@ class Player {
 			y = p.y + Math.sin(dir) * p.r;
 			xs = p.xs;
 			ys = p.ys;
+
+			if(p.m > 699999){
+				die();
+			}
 		}
 
 		if(Ctrl.acc > 0){
@@ -153,11 +157,15 @@ class Player {
 		if(alive){
 			hitCli.line.copy(laserLine);
 			if(hitCli.update()){
-				alive = false;
-				Sound.playerExplode();
-				Game.emitParticles(new ExpPtcl(x, y));
-				Stats.playerKilled();
+				die();
 			}
 		}
+	}
+
+	private function die(){
+		alive = false;
+		Sound.playerExplode();
+		Game.emitParticles(new ExpPtcl(x, y));
+		Stats.playerKilled();
 	}
 }
