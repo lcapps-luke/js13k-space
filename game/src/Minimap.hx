@@ -44,7 +44,7 @@ class Minimap{
 			}
 		}
 
-		drawTriangle(c, x + Game.p.x * ratio, y + Game.p.y * ratio, 5, "#0F0");
+		drawTriangle(c, x + Game.p.x * ratio, y + Game.p.y * ratio, 8, "#0F0");
 
 		c.fillStyle = "#F00";
 		c.font = 'bold ${iconSize}px sans-serif';
@@ -60,13 +60,12 @@ class Minimap{
 	}
 
 	private function drawTriangle(c:CanvasRenderingContext2D, x:Float, y:Float, r:Float, s:String){
-		c.strokeStyle = s;
-		c.lineWidth = 1;
+		c.fillStyle = s;
 		c.beginPath();
 		c.moveTo(x, y - r);
 		c.lineTo(x + r, y + r);
 		c.lineTo(x - r, y + r);
 		c.lineTo(x, y - r);
-		c.stroke();
+		c.fill();
 	}
 }
