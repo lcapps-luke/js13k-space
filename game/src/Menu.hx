@@ -48,7 +48,7 @@ class Menu{
 		// title
 		c.font = "bold 128px sans-serif";
 		c.fillStyle = "#F00";
-		var txt = "SPACE";
+		var txt = "SOLAR DEFENSE";
 		c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height * 0.25 + 128);
 
 		// play button
