@@ -13,8 +13,8 @@ class Player {
 	private static inline var THRUST:Float = 800;
 	private static inline var SHOT_COOL_DOWN:Float = 0.15;
 	private static inline var SHOT_SPEED:Float = 600;
-	private static inline var RADIUS:Float = 10;
-	private static inline var SPR_RADIUS:Float = 15;
+	private static inline var RADIUS:Float = 12;
+	private static inline var SPR_RADIUS:Float = 20;
 	private static inline var ZOOM_DIST:Float = 900;
 	private static inline var ACCURACY:Float = 3.14 / 16;
 
@@ -107,7 +107,7 @@ class Player {
 		var ay = 0.0;
 
 		var touchPlanet:Planet = null;
-		var zoom:Float = 0.4;//0.25;
+		var zoom:Float = 0.7;//0.25;
 
 		pNear = null;
 

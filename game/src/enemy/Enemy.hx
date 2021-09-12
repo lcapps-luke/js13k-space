@@ -8,7 +8,7 @@ import math.AABB;
 import js.html.CanvasRenderingContext2D;
 
 class Enemy{
-	public static inline var RADIUS:Float = 15;
+	public static inline var RADIUS:Float = 20;
 	public static inline var AVOID_RADIUS:Float = RADIUS * 3;
 	public static inline var INFECT_DISTANCE:Float = 200;
 	private static inline var AVOID_DISTANCE:Float = INFECT_DISTANCE / 2;
