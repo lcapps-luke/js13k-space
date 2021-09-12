@@ -96,7 +96,7 @@ class Game {
 
 		v = new AABB(0, 0, c.canvas.width, c.canvas.height);
 
-		var spawnPlanet = planets[Math.ceil(Math.random() * planets.length)];
+		var spawnPlanet = planets[Math.ceil(Math.random() * (planets.length - 1))];
 		var dir = Math.random() * (Math.PI * 2);
 		p.x = spawnPlanet.x + Math.cos(dir) * spawnPlanet.r;
 		p.y = spawnPlanet.y + Math.sin(dir) * spawnPlanet.r;
