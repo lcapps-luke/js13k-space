@@ -43,6 +43,7 @@ class Main {
 
 	private static inline function init(img:Map<String, ImageElement>){
 		Game.init(c, img);
+		Menu.loaded = true;
 	}
 
 	public static function onResize() {

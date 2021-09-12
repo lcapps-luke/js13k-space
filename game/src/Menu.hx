@@ -20,6 +20,7 @@ class Menu{
 	private static var fullOver:Bool = false;
 
 	public static var active:Bool = false;
+	public static var loaded:Bool = false;
 
 	@:native("i")
 	public static function init(c:CanvasElement){
@@ -54,6 +55,9 @@ class Menu{
 		c.font = "bold 48px sans-serif";
 		c.fillStyle = "#F00";
 		txt = playOver ? "-PLAY-" : "PLAY";
+		if(!loaded){
+			txt = "Loading...";
+		}
 		c.fillText(txt, c.canvas.width / 2 - c.measureText(txt).width / 2, c.canvas.height * 0.67);
 
 		// full screen button
@@ -87,7 +91,7 @@ class Menu{
 		
 		if(fullRegion.contains(mx, my)){
 			Browser.window.document.body.requestFullscreen();
-		}else if(playRegion.contains(mx, my)){
+		}else if(playRegion.contains(mx, my) && loaded){
 			active = false;
 			msk.start(0.5, false, startCallback);
 		}
