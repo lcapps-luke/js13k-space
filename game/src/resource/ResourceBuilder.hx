@@ -19,7 +19,7 @@ class ResourceBuilder{
 
 		var images:Array<Img> = new Array<Img>();
 
-		trace("minifing images");
+		trace("minifying images");
 		Sys.command("svgo", [
 			"-f", IMG_PATH,
 			"-o", IMG_MIN_PATH,

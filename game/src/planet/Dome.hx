@@ -1,7 +1,8 @@
 package planet;
 
+import ptcl.ExpPtcl;
+import js.html.svg.ImageElement;
 import math.LcMath;
-import js.html.ImageCapture;
 import enemy.Enemy;
 import js.html.CanvasRenderingContext2D;
 import math.AABB;
@@ -18,10 +19,13 @@ class Dome{
 	public var ex(default, null):Float = 0;
 	public var ey(default, null):Float = 0;
 
+	private var spr:ImageElement;
+
 	public function new(p:Planet, d:Float){
 		this.p = p;
 		this.d = d;
 		aabb = new AABB(0, 0, RADIUS * 2, RADIUS * 2);
+		spr = Game.img["dome"];
 	}
 
 	public function update(s:Float, c:CanvasRenderingContext2D){
@@ -34,10 +38,7 @@ class Dome{
 		ey = p.y + Math.sin(d) * (p.r + Enemy.INFECT_DISTANCE);
 
 		if(Game.inView(aabb) && isAlive()){
-			c.fillStyle = "#333";
-			c.beginPath();
-			c.arc(x, y, RADIUS, 0, Math.PI * 2);
-			c.fill();
+			c.drawImage(spr, x - RADIUS, y - RADIUS, RADIUS * 2, RADIUS * 2);
 		}
 	}
 
@@ -52,6 +53,7 @@ class Dome{
 		if(wa && !isAlive()){
 			var pd = LcMath.distP(aabb.cX(), aabb.cY(), Game.p.x, Game.p.y);
 			Sound.playerExplode(LcMath.cap(400 / pd));
+			Game.emitParticles(new ExpPtcl(aabb.cX(), aabb.cY()));
 		}
 	}
 }
