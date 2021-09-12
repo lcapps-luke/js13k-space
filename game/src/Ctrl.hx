@@ -137,16 +137,16 @@ class Ctrl{
 		var dx = 0;
 		var dy = 0;
 
-		if(keys.get("KeyW")){
+		if(keys.get("KeyW") || keys.get("ArrowUp")){
 			dy -= 1;
 		}
-		if(keys.get("KeyS")){
+		if(keys.get("KeyS") || keys.get("ArrowDown")){
 			dy += 1;
 		}
-		if(keys.get("KeyA")){
+		if(keys.get("KeyA") || keys.get("ArrowLeft")){
 			dx -= 1;
 		}
-		if(keys.get("KeyD")){
+		if(keys.get("KeyD") || keys.get("ArrowRight")){
 			dx += 1;
 		}
 
